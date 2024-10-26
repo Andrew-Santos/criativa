@@ -4,8 +4,131 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seleção de Moldura</title>
-    <!-- Link para o arquivo CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos gerais para o corpo da página */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #e0f7fa;
+        }
+
+        /* Estilos para o container principal */
+        .container {
+            text-align: center;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            width: 100%;
+            margin: 10px;
+        }
+
+        /* Estilos para o cabeçalho */
+        header {
+            margin-bottom: 20px;
+        }
+
+        /* Estilos para as seções de seleção de moldura, upload de foto e pré-visualização */
+        .frame-selector, .photo-upload, .preview {
+            margin-bottom: 20px;
+        }
+
+        /* Estilos para o contêiner das molduras */
+        .frames {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Estilos para as molduras */
+        .frame {
+            width: 80px;
+            height: 80px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 15px; /* Cantos arredondados para molduras */
+            border: 2px solid transparent;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Estilos para a moldura selecionada e hover */
+        .frame:hover, .frame.selected {
+            border-color: #1e88e5;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Moldura flutuante */
+            transform: scale(1.1);
+        }
+
+        /* Estilos para o canvas da pré-visualização */
+        canvas {
+            width: 100%;
+            max-width: 300px; /* Tamanho menor para pré-visualização */
+            height: auto;
+            border-radius: 15px; /* Cantos arredondados para canvas */
+            border: 1px solid #ccc;
+        }
+
+        /* Estilos para o botão */
+        button {
+            padding: 15px 30px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold; /* Texto em negrito */
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5); /* Efeito 3D */
+        }
+
+        /* Estilos para o hover do botão */
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilos responsivos para dispositivos móveis */
+        @media (max-width: 600px) {
+            .frames {
+                flex-direction: row; /* Molduras lado a lado em dispositivos móveis */
+            }
+
+            .frame {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        /* Estilo harmonizado para input de arquivo */
+        .file-upload {
+            margin: 0 auto;
+            display: inline-block;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload::before {
+            content: 'Escolher Arquivo';
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .file-upload:hover::before {
+            background: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -34,7 +157,46 @@
         <!-- Botão de compartilhar com ícone e novo estilo -->
         <button onclick="sharePhoto()"><b>Encaminhar 📤</b></button>
     </div>
-    <!-- Link para o arquivo JavaScript -->
-    <script src="script.js"></script>
-</body>
-</html>
+    <script>
+        let selectedFrame = '';
+        let loadedImage = null;
+
+        // Função para selecionar a moldura
+        function selectFrame(frame) {
+            selectedFrame = frame;
+            // Remove a classe 'selected' de todas as molduras
+            document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
+            // Adiciona a classe 'selected' à moldura clicada
+            event.target.classList.add('selected');
+            drawCanvas(); // Desenha a moldura no canvas, mesmo sem imagem carregada
+        }
+
+        // Função para carregar a foto do input
+        function loadPhoto(event) {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const img = new Image();
+                img.onload = function () {
+                    loadedImage = img; // Armazena a imagem carregada
+                    drawCanvas(); // Desenha a imagem no canvas
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // Função para desenhar a imagem e a moldura no canvas
+        function drawCanvas() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Definindo as dimensões do canvas
+            const canvasWidth = 1080;
+            const canvasHeight = 1920;
+
+            // Limpa o canvas
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            if (loadedImage) {
+                // Ajustando a imagem ao tamanho do canvas
+                const imgAspectRatio = loadedImage
