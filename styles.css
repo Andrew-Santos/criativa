@@ -7,16 +7,16 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #e0f7fa;
+    background-color: #eceff1;
 }
 
 /* Estilos para o container principal */
 .container {
     text-align: center;
-    background: #fff;
+    background: linear-gradient(to bottom right, #6a11cb, #2575fc);
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     max-width: 100%;
     width: 100%;
     margin: 10px;
@@ -25,7 +25,6 @@ body {
 /* Estilos para o cabeçalho */
 header {
     margin-bottom: 20px;
-    color: #01579b;
 }
 
 /* Estilos para as seções de seleção de moldura, upload de foto e pré-visualização */
@@ -40,17 +39,33 @@ header {
     flex-wrap: wrap;
 }
 
+/* Moldura com aparência flutuante e cantos arredondados */
+.frame-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.frame-wrapper:hover {
+    transform: translateY(-5px);
+}
+
 /* Estilos para as molduras */
 .frame {
     width: 80px;
     height: 80px;
-    margin: 10px;
     cursor: pointer;
+    border-radius: 10px;
     border: 2px solid transparent;
     transition: transform 0.2s ease;
 }
 
-/* Estilos para a moldura selecionada e hover */
+/* Estilos para a moldura selecionada */
 .frame:hover, .frame.selected {
     border-color: #1e88e5;
     transform: scale(1.1);
@@ -64,15 +79,10 @@ canvas {
     border: 1px solid #ccc;
 }
 
-/* Estilos para os botões de ação */
-.actions {
-    display: flex;
-    justify-content: space-around;
-}
-
-button {
+/* Estilos para o botão */
+.btn-encaminhar {
     padding: 10px 20px;
-    background-color: #1e88e5;
+    background-color: #2575fc;
     color: white;
     border: none;
     border-radius: 5px;
@@ -80,29 +90,24 @@ button {
     transition: background-color 0.2s ease;
 }
 
-/* Estilos para o hover dos botões */
-button:hover {
-    background-color: #1565c0;
+.btn-encaminhar:hover {
+    background-color: #1e62d0;
+}
+
+/* Estilos para o ícone de encaminhar */
+.btn-encaminhar i {
+    margin-right: 8px;
 }
 
 /* Estilos responsivos para dispositivos móveis */
 @media (max-width: 600px) {
     .frames {
         flex-direction: row;
-        flex-wrap: nowrap;
-        overflow-x: auto;
+        align-items: center;
     }
 
-    .frame {
-        width: 60px;
-        height: 60px;
-    }
-
-    .actions {
-        flex-direction: column;
-    }
-
-    button {
-        margin-bottom: 10px;
+    .frame-wrapper {
+        width: 80px;
+        height: 80px;
     }
 }
