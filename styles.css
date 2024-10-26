@@ -1,6 +1,6 @@
 /* Estilos gerais para o corpo da página */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
@@ -35,7 +35,7 @@ header {
 /* Estilos para o contêiner das molduras */
 .frames {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
@@ -88,7 +88,7 @@ button:hover {
 /* Estilos responsivos para dispositivos móveis */
 @media (max-width: 600px) {
     .frames {
-        justify-content: center; /* Molduras lado a lado em dispositivos móveis */
+        flex-direction: row; /* Molduras lado a lado em dispositivos móveis */
     }
 
     .frame {
