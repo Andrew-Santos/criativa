@@ -7,7 +7,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #eceff1;
+    background-color: #e0f7fa;
 }
 
 /* Estilos para o container principal */
@@ -25,6 +25,7 @@ body {
 /* Estilos para o cabeçalho */
 header {
     margin-bottom: 20px;
+    color: #01579b;
 }
 
 /* Estilos para as seções de seleção de moldura, upload de foto e pré-visualização */
@@ -63,7 +64,12 @@ canvas {
     border: 1px solid #ccc;
 }
 
-/* Estilos para o botão */
+/* Estilos para os botões de ação */
+.actions {
+    display: flex;
+    justify-content: space-around;
+}
+
 button {
     padding: 10px 20px;
     background-color: #1e88e5;
@@ -74,7 +80,7 @@ button {
     transition: background-color 0.2s ease;
 }
 
-/* Estilos para o hover do botão */
+/* Estilos para o hover dos botões */
 button:hover {
     background-color: #1565c0;
 }
@@ -82,12 +88,21 @@ button:hover {
 /* Estilos responsivos para dispositivos móveis */
 @media (max-width: 600px) {
     .frames {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
 
     .frame {
         width: 60px;
         height: 60px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    button {
+        margin-bottom: 10px;
     }
 }
