@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Moldura</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Seleção de Moldura</h1>
+            <p>Escolha uma moldura para sua foto e faça o download com alta qualidade!</p>
+        </header>
+        <div class="frame-selector">
+            <h2>Escolha uma Moldura</h2>
+            <div class="frames">
+                <img src="Imagens/frame1.png" alt="Frame 1" class="frame" onclick="selectFrame('Imagens/frame1.png')">
+                <img src="Imagens/frame2.png" alt="Frame 2" class="frame" onclick="selectFrame('Imagens/frame2.png')">
+                <img src="Imagens/frame3.png" alt="Frame 3" class="frame" onclick="selectFrame('Imagens/frame3.png')">
+                <img src="Imagens/frame4.png" alt="Frame 4" class="frame" onclick="selectFrame('Imagens/frame4.png')">
+                <img src="Imagens/frame5.png" alt="Frame 5" class="frame" onclick="selectFrame('Imagens/frame5.png')">
+            </div>
+        </div>
+        <div class="photo-upload">
+            <h2>Escolha uma Foto</h2>
+            <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)">
+        </div>
+        <div class="preview">
+            <h2>Pré-visualização</h2>
+            <canvas id="canvas"></canvas>
+        </div>
+        <button onclick="downloadPhoto()">Download</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
