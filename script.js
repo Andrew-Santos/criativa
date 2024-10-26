@@ -8,8 +8,8 @@ function selectFrame(frame) {
     document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
     // Adiciona a classe 'selected' à moldura clicada
     event.target.classList.add('selected');
-    // Atualiza o canvas mesmo sem imagem carregada
-    drawCanvas(loadedImage || new Image());
+    // Atualiza a pré-visualização com a moldura selecionada
+    updateCanvas();
 }
 
 // Função para carregar a foto do input
@@ -60,48 +60,5 @@ function drawCanvas(img) {
     canvas.height = canvasHeight;
 
     // Desenhando a imagem e a moldura no canvas
-    if (img.src) {
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    }
-    if (selectedFrame) {
-        const frame = new Image();
-        frame.onload = function () {
-            ctx.drawImage(frame, 0, 0, canvasWidth, canvasHeight);
-        };
-        frame.src = selectedFrame;
-    }
-}
-
-// Função para fazer o download da foto com moldura
-function downloadPhoto() {
-    const canvas = document.getElementById('canvas');
-    canvas.toBlob(function (blob) {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'photo_with_frame.png';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }, 'image/png');
-}
-
-// Função para compartilhar a foto
-function sharePhoto() {
-    const canvas = document.getElementById('canvas');
-    canvas.toBlob(function (blob) {
-        const file = new File([blob], 'photo_with_frame.png', { type: 'image/png' });
-        const filesArray = [file];
-        if (navigator.share) {
-            navigator.share({
-                files: filesArray,
-                title: 'Minha Foto com Moldura',
-                text: 'Olha essa foto com moldura!',
-            })
-            .then(() => console.log('Compartilhamento bem-sucedido'))
-            .catch((error) => console.error('Erro ao compartilhar', error));
-        } else {
-            alert('Compartilhamento não suportado neste navegador.');
-        }
-    }, 'image/png');
-}
+    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    const
