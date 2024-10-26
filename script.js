@@ -43,10 +43,16 @@ function drawCanvas(img) {
 }
 
 // Função para fazer o download da foto com moldura
+// Ajustada para melhor compatibilidade em dispositivos móveis
 function downloadPhoto() {
     const canvas = document.getElementById('canvas');
-    const link = document.createElement('a');
-    link.download = 'photo_with_frame.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    canvas.toBlob(function (blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'photo_with_frame.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }, 'image/png');
 }
