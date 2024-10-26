@@ -10,8 +10,8 @@
 <body>
     <div class="container">
         <header>
+            <!-- Removido o texto inicial -->
             <h1>Seleção de Moldura</h1>
-            <p>Escolha uma moldura para sua foto e faça o download com alta qualidade!</p>
         </header>
         <div class="photo-upload">
             <h2>Escolha uma Foto</h2>
@@ -22,10 +22,18 @@
             <h2>Escolha uma Moldura</h2>
             <div class="frames">
                 <!-- Imagens das molduras fora da pasta -->
-                <img src="frame1.png" alt="Frame 1" class="frame" onclick="selectFrame('frame1.png')">
-                <img src="frame2.png" alt="Frame 2" class="frame" onclick="selectFrame('frame2.png')">
-                <img src="frame3.png" alt="Frame 3" class="frame" onclick="selectFrame('frame3.png')">
-                <img src="frame4.png" alt="Frame 4" class="frame" onclick="selectFrame('frame4.png')">
+                <div class="frame-wrapper">
+                    <img src="frame1.png" alt="Frame 1" class="frame" onclick="selectFrame('frame1.png')">
+                </div>
+                <div class="frame-wrapper">
+                    <img src="frame2.png" alt="Frame 2" class="frame" onclick="selectFrame('frame2.png')">
+                </div>
+                <div class="frame-wrapper">
+                    <img src="frame3.png" alt="Frame 3" class="frame" onclick="selectFrame('frame3.png')">
+                </div>
+                <div class="frame-wrapper">
+                    <img src="frame4.png" alt="Frame 4" class="frame" onclick="selectFrame('frame4.png')">
+                </div>
             </div>
         </div>
         <div class="preview">
@@ -33,13 +41,15 @@
             <!-- Canvas para exibir a pré-visualização da foto com moldura -->
             <canvas id="canvas" width="1080" height="1920"></canvas>
         </div>
-        <!-- Botões para download e compartilhamento -->
-        <div class="actions">
-            <button onclick="downloadPhoto()">Download</button>
-            <button onclick="sharePhoto()">Compartilhar</button>
-        </div>
+        <!-- Botão para compartilhar a foto com moldura -->
+        <button class="btn-encaminhar" onclick="sharePhoto()">
+            <!-- Símbolo para o botão de encaminhar -->
+            <i class="fas fa-share"></i> Encaminhar
+        </button>
     </div>
     <!-- Link para o arquivo JavaScript -->
     <script src="script.js"></script>
+    <!-- Link para o Font Awesome para os ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </body>
 </html>
