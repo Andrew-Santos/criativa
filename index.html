@@ -14,16 +14,17 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #e0f7fa;
+            background-color: #1a237e; /* Fundo escuro azulado */
+            color: #e0f7fa; /* Texto claro */
         }
 
         /* Estilos para o container principal */
         .container {
             text-align: center;
-            background: #ffffff;
+            background: #283593; /* Fundo do container em azul escuro */
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             width: 90%;
             max-width: 500px;
             margin: 10px;
@@ -59,8 +60,8 @@
 
         /* Estilos para a moldura selecionada e hover */
         .frame:hover, .frame.selected {
-            border-color: #1e88e5;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-color: #64b5f6;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             transform: scale(1.1);
         }
 
@@ -76,7 +77,7 @@
         /* Estilos para o botão */
         button {
             padding: 15px 30px;
-            background-color: #007bff;
+            background-color: #1e88e5;
             color: white;
             border: none;
             border-radius: 10px;
@@ -89,7 +90,7 @@
 
         /* Estilos para o hover do botão */
         button:hover {
-            background-color: #0056b3;
+            background-color: #1565c0;
         }
 
         /* Estilos responsivos */
@@ -101,7 +102,7 @@
 
         /* Estilo do botão de upload */
         .file-upload label {
-            background: #007bff;
+            background: #1e88e5;
             color: white;
             padding: 10px 20px;
             border-radius: 10px;
@@ -111,7 +112,7 @@
         }
 
         .file-upload label:hover {
-            background: #0056b3;
+            background: #1565c0;
         }
     </style>
 </head>
@@ -120,7 +121,6 @@
         <div class="photo-upload">
             <h2>Escolha uma Foto</h2>
             <div class="file-upload">
-                <!-- Corrige o botão de upload -->
                 <label for="photoInput">Escolher Arquivo</label>
                 <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display: none;">
             </div>
@@ -138,7 +138,7 @@
             <h2>Pré-visualização</h2>
             <canvas id="canvas" width="1080" height="1920"></canvas>
         </div>
-        <button onclick="sharePhoto()"><b>Compartilhar 📤</b></button>
+        <button onclick="sharePhoto()"><b>Compartilhar ➤</b></button>
     </div>
 
     <script>
@@ -200,7 +200,22 @@
         }
 
         function sharePhoto() {
-            alert('Função de compartilhamento em desenvolvimento.');
+            const canvas = document.getElementById('canvas');
+            canvas.toBlob((blob) => {
+                const file = new File([blob], "foto-com-moldura.png", { type: "image/png" });
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Foto com Moldura',
+                        text: 'Veja minha foto com moldura!',
+                        files: [file]
+                    })
+                    .then(() => console.log('Compartilhamento bem-sucedido!'))
+                    .catch((error) => console.error('Erro ao compartilhar:', error));
+                } else {
+                    alert('A API de compartilhamento não é compatível com este navegador.');
+                }
+            });
         }
     </script>
 </body>
