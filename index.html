@@ -52,7 +52,7 @@
             height: 80px;
             margin: 10px;
             cursor: pointer;
-            border-radius: 15px; /* Cantos arredondados para molduras */
+            border-radius: 15px;
             border: 2px solid transparent;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -60,16 +60,16 @@
         /* Estilos para a moldura selecionada e hover */
         .frame:hover, .frame.selected {
             border-color: #1e88e5;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Moldura flutuante */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transform: scale(1.1);
         }
 
         /* Estilos para o canvas da pré-visualização */
         canvas {
             width: 100%;
-            max-width: 300px; /* Tamanho menor para pré-visualização */
+            max-width: 300px;
             height: auto;
-            border-radius: 15px; /* Cantos arredondados para canvas */
+            border-radius: 15px;
             border: 1px solid #ccc;
         }
 
@@ -81,10 +81,10 @@
             border: none;
             border-radius: 10px;
             font-size: 16px;
-            font-weight: bold; /* Texto em negrito */
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5); /* Efeito 3D */
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
         }
 
         /* Estilos para o hover do botão */
@@ -95,9 +95,8 @@
         /* Estilos responsivos para dispositivos móveis */
         @media (max-width: 600px) {
             .frames {
-                flex-direction: row; /* Molduras lado a lado em dispositivos móveis */
+                flex-direction: row;
             }
-
             .frame {
                 width: 80px;
                 height: 80px;
@@ -134,7 +133,6 @@
     <div class="container">
         <div class="photo-upload">
             <h2>Escolha uma Foto</h2>
-            <!-- Campo de upload de foto mais harmonizado -->
             <div class="file-upload">
                 <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)">
             </div>
@@ -142,7 +140,6 @@
         <div class="frame-selector">
             <h2>Escolha uma Moldura</h2>
             <div class="frames">
-                <!-- Imagens das molduras fora da pasta -->
                 <img src="frame1.png" alt="Frame 1" class="frame" onclick="selectFrame('frame1.png')">
                 <img src="frame2.png" alt="Frame 2" class="frame" onclick="selectFrame('frame2.png')">
                 <img src="frame3.png" alt="Frame 3" class="frame" onclick="selectFrame('frame3.png')">
@@ -151,12 +148,11 @@
         </div>
         <div class="preview">
             <h2>Pré-visualização</h2>
-            <!-- Canvas para exibir a pré-visualização da foto com moldura -->
             <canvas id="canvas" width="1080" height="1920"></canvas>
         </div>
-        <!-- Botão de compartilhar com ícone e novo estilo -->
-        <button onclick="sharePhoto()"><b>Encaminhar 📤</b></button>
+        <button onclick="sharePhoto()">Encaminhar 📤</button>
     </div>
+
     <script>
         let selectedFrame = '';
         let loadedImage = null;
@@ -164,11 +160,9 @@
         // Função para selecionar a moldura
         function selectFrame(frame) {
             selectedFrame = frame;
-            // Remove a classe 'selected' de todas as molduras
             document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
-            // Adiciona a classe 'selected' à moldura clicada
             event.target.classList.add('selected');
-            drawCanvas(); // Desenha a moldura no canvas, mesmo sem imagem carregada
+            drawCanvas();
         }
 
         // Função para carregar a foto do input
@@ -177,8 +171,8 @@
             reader.onload = function () {
                 const img = new Image();
                 img.onload = function () {
-                    loadedImage = img; // Armazena a imagem carregada
-                    drawCanvas(); // Desenha a imagem no canvas
+                    loadedImage = img;
+                    drawCanvas();
                 };
                 img.src = reader.result;
             };
@@ -189,14 +183,30 @@
         function drawCanvas() {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
-
-            // Definindo as dimensões do canvas
-            const canvasWidth = 1080;
-            const canvasHeight = 1920;
-
-            // Limpa o canvas
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (loadedImage) {
-                // Ajustando a imagem ao tamanho do canvas
-                const imgAspectRatio = loadedImage
+                ctx.drawImage(loadedImage, 0, 0, canvas.width, canvas.height);
+            }
+
+            if (selectedFrame) {
+                const frameImg = new Image();
+                frameImg.onload = function () {
+                    ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+                };
+                frameImg.src = selectedFrame;
+            }
+        }
+
+        // Função para compartilhar a foto
+        function sharePhoto() {
+            const canvas = document.getElementById('canvas');
+            const dataUrl = canvas.toDataURL();
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = 'foto_com_moldura.png';
+            link.click();
+        }
+    </script>
+</body>
+</html>
