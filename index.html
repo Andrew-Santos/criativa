@@ -24,8 +24,8 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 100%;
-            width: 100%;
+            width: 90%;
+            max-width: 500px;
             margin: 10px;
         }
 
@@ -44,13 +44,13 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
+            gap: 10px;
         }
 
         /* Estilos para as molduras */
         .frame {
             width: 80px;
             height: 80px;
-            margin: 10px;
             cursor: pointer;
             border-radius: 15px;
             border: 2px solid transparent;
@@ -92,39 +92,25 @@
             background-color: #0056b3;
         }
 
-        /* Estilos responsivos para dispositivos móveis */
+        /* Estilos responsivos */
         @media (max-width: 600px) {
             .frames {
-                flex-direction: row;
-            }
-            .frame {
-                width: 80px;
-                height: 80px;
+                justify-content: space-around;
             }
         }
 
-        /* Estilo harmonizado para input de arquivo */
-        .file-upload {
-            margin: 0 auto;
-            display: inline-block;
-        }
-
-        .file-upload input[type="file"] {
-            display: none;
-        }
-
-        .file-upload::before {
-            content: 'Escolher Arquivo';
-            display: inline-block;
+        /* Estilo do botão de upload */
+        .file-upload label {
             background: #007bff;
             color: white;
             padding: 10px 20px;
             border-radius: 10px;
             cursor: pointer;
             transition: background 0.3s ease;
+            display: inline-block;
         }
 
-        .file-upload:hover::before {
+        .file-upload label:hover {
             background: #0056b3;
         }
     </style>
@@ -134,7 +120,9 @@
         <div class="photo-upload">
             <h2>Escolha uma Foto</h2>
             <div class="file-upload">
-                <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)">
+                <!-- Corrige o botão de upload -->
+                <label for="photoInput">Escolher Arquivo</label>
+                <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display: none;">
             </div>
         </div>
         <div class="frame-selector">
@@ -150,14 +138,13 @@
             <h2>Pré-visualização</h2>
             <canvas id="canvas" width="1080" height="1920"></canvas>
         </div>
-        <button onclick="sharePhoto()">Encaminhar 📤</button>
+        <button onclick="sharePhoto()"><b>Compartilhar 📤</b></button>
     </div>
 
     <script>
         let selectedFrame = '';
         let loadedImage = null;
 
-        // Função para selecionar a moldura
         function selectFrame(frame) {
             selectedFrame = frame;
             document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
@@ -165,7 +152,6 @@
             drawCanvas();
         }
 
-        // Função para carregar a foto do input
         function loadPhoto(event) {
             const reader = new FileReader();
             reader.onload = function () {
@@ -179,33 +165,42 @@
             reader.readAsDataURL(event.target.files[0]);
         }
 
-        // Função para desenhar a imagem e a moldura no canvas
         function drawCanvas() {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (loadedImage) {
-                ctx.drawImage(loadedImage, 0, 0, canvas.width, canvas.height);
+                const imgAspectRatio = loadedImage.width / loadedImage.height;
+                const canvasAspectRatio = canvas.width / canvas.height;
+                let drawWidth, drawHeight, offsetX, offsetY;
+
+                if (imgAspectRatio > canvasAspectRatio) {
+                    drawWidth = canvas.width;
+                    drawHeight = drawWidth / imgAspectRatio;
+                    offsetX = 0;
+                    offsetY = (canvas.height - drawHeight) / 2;
+                } else {
+                    drawHeight = canvas.height;
+                    drawWidth = drawHeight * imgAspectRatio;
+                    offsetX = (canvas.width - drawWidth) / 2;
+                    offsetY = 0;
+                }
+
+                ctx.drawImage(loadedImage, offsetX, offsetY, drawWidth, drawHeight);
             }
 
             if (selectedFrame) {
-                const frameImg = new Image();
-                frameImg.onload = function () {
-                    ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+                const frame = new Image();
+                frame.src = selectedFrame;
+                frame.onload = function () {
+                    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
                 };
-                frameImg.src = selectedFrame;
             }
         }
 
-        // Função para compartilhar a foto
         function sharePhoto() {
-            const canvas = document.getElementById('canvas');
-            const dataUrl = canvas.toDataURL();
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = 'foto_com_moldura.png';
-            link.click();
+            alert('Função de compartilhamento em desenvolvimento.');
         }
     </script>
 </body>
