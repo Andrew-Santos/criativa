@@ -8,10 +8,8 @@ function selectFrame(frame) {
     document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
     // Adiciona a classe 'selected' à moldura clicada
     event.target.classList.add('selected');
-    // Se houver uma imagem carregada, desenha a moldura sobre a imagem
-    if (loadedImage) {
-        drawCanvas(loadedImage);
-    }
+    // Atualiza o canvas mesmo sem imagem carregada
+    drawCanvas(loadedImage || new Image());
 }
 
 // Função para carregar a foto do input
@@ -62,16 +60,19 @@ function drawCanvas(img) {
     canvas.height = canvasHeight;
 
     // Desenhando a imagem e a moldura no canvas
-    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    const frame = new Image();
-    frame.onload = function () {
-        ctx.drawImage(frame, 0, 0, canvasWidth, canvasHeight);
-    };
-    frame.src = selectedFrame;
+    if (img.src) {
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    }
+    if (selectedFrame) {
+        const frame = new Image();
+        frame.onload = function () {
+            ctx.drawImage(frame, 0, 0, canvasWidth, canvasHeight);
+        };
+        frame.src = selectedFrame;
+    }
 }
 
 // Função para fazer o download da foto com moldura
-// Ajustada para melhor compatibilidade em dispositivos móveis
 function downloadPhoto() {
     const canvas = document.getElementById('canvas');
     canvas.toBlob(function (blob) {
@@ -82,5 +83,25 @@ function downloadPhoto() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }, 'image/png');
+}
+
+// Função para compartilhar a foto
+function sharePhoto() {
+    const canvas = document.getElementById('canvas');
+    canvas.toBlob(function (blob) {
+        const file = new File([blob], 'photo_with_frame.png', { type: 'image/png' });
+        const filesArray = [file];
+        if (navigator.share) {
+            navigator.share({
+                files: filesArray,
+                title: 'Minha Foto com Moldura',
+                text: 'Olha essa foto com moldura!',
+            })
+            .then(() => console.log('Compartilhamento bem-sucedido'))
+            .catch((error) => console.error('Erro ao compartilhar', error));
+        } else {
+            alert('Compartilhamento não suportado neste navegador.');
+        }
     }, 'image/png');
 }
