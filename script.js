@@ -76,11 +76,4 @@ function drawCanvas() {
 function sharePhoto() {
     const canvas = document.getElementById('canvas');
     canvas.toBlob(function (blob) {
-        const file = new File([blob], 'photo_with_frame.png', { type: 'image/png' });
-        const filesArray = [file];
-
-        if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-            navigator.share({
-                files: filesArray,
-                title: 'Minha Foto',
-                text: 'Confira minha foto com mold[_{{{CITATION{{{_1{](https://github.com/AAndreLuis-dev/HTML-CSS_CursoEmVideo/tree/6428913bc9fbaa312d2cdade3550496520635d65/modulo-01%2Fmodulo-1%28d%29%2Fd002%2FREADME.md)[_{{{CITATION{{{_2{](https://github.com/lgfranco22/blog/tree/2ff765f5547038ea91aa40671858d9fd9d5ffb28/entrar.php)
+        const file = new File([blob], 'photo_with_frame.png', {[_{{{CITATION{{{_1{](https://github.com/hdquarters/nc.hemersonvianna/tree/12948b37e5526bdc478a71746c48bd02551b23f6/source%2F_posts%2F2019%2Fdia-28-css-grid-layout.md)[_{{{CITATION{{{_2{](https://github.com/lgfranco22/blog/tree/2ff765f5547038ea91aa40671858d9fd9d5ffb28/entrar.php)
