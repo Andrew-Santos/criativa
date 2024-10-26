@@ -32,12 +32,40 @@ function loadPhoto(event) {
 function drawCanvas(img) {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
+
+    // Definindo as dimensões do canvas
+    const canvasWidth = 1080;
+    const canvasHeight = 1920;
+
+    // Ajustando a imagem ao tamanho do canvas
+    const imgAspectRatio = img.width / img.height;
+    const canvasAspectRatio = canvasWidth / canvasHeight;
+
+    let drawWidth, drawHeight, offsetX, offsetY;
+
+    if (imgAspectRatio > canvasAspectRatio) {
+        // A imagem é mais larga que o canvas
+        drawHeight = canvasHeight;
+        drawWidth = img.width * (canvasHeight / img.height);
+        offsetX = (canvasWidth - drawWidth) / 2;
+        offsetY = 0;
+    } else {
+        // A imagem é mais alta que o canvas
+        drawWidth = canvasWidth;
+        drawHeight = img.height * (canvasWidth / img.width);
+        offsetX = 0;
+        offsetY = (canvasHeight - drawHeight) / 2;
+    }
+
+    // Redefinindo as dimensões do canvas
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
+    // Desenhando a imagem e a moldura no canvas
+    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     const frame = new Image();
     frame.onload = function () {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-        ctx.drawImage(frame, 0, 0, img.width, img.height);
+        ctx.drawImage(frame, 0, 0, canvasWidth, canvasHeight);
     };
     frame.src = selectedFrame;
 }
