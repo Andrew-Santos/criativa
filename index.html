@@ -42,6 +42,8 @@
         canvas.addEventListener('mouseup', () => isDragging = false);
         canvas.addEventListener('mouseleave', () => isDragging = false);
         async function sharePhoto() { const dataUrl = canvas.toDataURL('image/png'); try { const response = await fetch(dataUrl); const blob = await response.blob(); const file = new File([blob], 'imagem.png', { type: 'image/png' }); await navigator.share({ title: 'Imagem com Moldura', text: 'Confira esta imagem que criei!', files: [file] }); } catch (error) { console.error('Erro ao compartilhar:', error); } }
-    </script>
+    
+    //COPY WA CRIATIVA
+    </script> 
 </body>
 </html>
