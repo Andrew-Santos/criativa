@@ -235,17 +235,26 @@
                 drawCanvas();
             } else if (event.touches.length === 2 && lastTouchDistance !== null) {
                 const currentDistance = getTouchDistance(event.touches);
-                scale *= currentDistance / lastTouchDistance; // Ajusta a escala
+                const zoomFactor = currentDistance / lastTouchDistance; // Calcula o fator de zoom baseado na distância entre os dedos
+                scale *= zoomFactor; // Ajusta a escala
                 scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
                 lastTouchDistance = currentDistance; // Atualiza a distância
+                const midX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+                const midY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+
+                offsetX -= (midX - canvas.width / 2) * (zoomFactor - 1); // Ajusta o deslocamento X
+                offsetY -= (midY - canvas.height / 2) * (zoomFactor - 1); // Ajusta o deslocamento Y
+                
                 drawCanvas();
             }
             event.preventDefault(); // Impede o scroll da página
         });
 
-        canvas.addEventListener('touchend', function () {
+        canvas.addEventListener('touchend', function (event) {
+            if (event.touches.length < 2) {
+                lastTouchDistance = null;
+            }
             isDragging = false;
-            lastTouchDistance = null;
         });
 
         function getTouchDistance(touches) {
@@ -261,6 +270,8 @@
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = 'foto_com_moldura.png';
+                // Aqui você pode alterar o comportamento para compartilhar em vez de baixar
+                // Para fins de demonstração, vamos usar o download como exemplo
                 a.click();
                 URL.revokeObjectURL(url);
             }, 'image/png');
