@@ -32,12 +32,15 @@ button:active { transform: translateY(6px); box-shadow: 0 3px #AA647B; }
 </div>
 <script>
 let selectedFrame = '', loadedImage = null, scale = 1, offsetX = 0, offsetY = 0, isDragging = false, lastMouseX, lastMouseY, isTouchDevice = 'ontouchstart' in window;
+let pinchStartDist = 0, initialScale = 1; // Variáveis para rastrear o gesto de pinça
+
 function selectFrame(frame) {
 selectedFrame = frame;
 document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
 event.target.classList.add('selected');
 drawCanvas();
 }
+
 function loadPhoto(event) {
 const reader = new FileReader();
 reader.onload = () => {
@@ -47,6 +50,7 @@ loadedImage.src = reader.result;
 };
 reader.readAsDataURL(event.target.files[0]);
 }
+
 function drawCanvas() {
 const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -63,7 +67,35 @@ frame.src = selectedFrame;
 frame.onload = () => ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 }
 }
-const canvas = document.getElementById('canvas');
+
+function getPinchDistance(touches) {
+const dx = touches[0].clientX - touches[1].clientX;
+const dy = touches[0].clientY - touches[1].clientY;
+return Math.sqrt(dx * dx + dy * dy);
+}
+
+canvas.addEventListener('touchstart', (event) => {
+if (event.touches.length === 2) {
+pinchStartDist = getPinchDistance(event.touches);
+initialScale = scale;
+}
+startDrag(event);
+});
+
+canvas.addEventListener('touchmove', (event) => {
+if (event.touches.length === 2) {
+event.preventDefault();
+const pinchDist = getPinchDistance(event.touches);
+const pinchScale = pinchDist / pinchStartDist;
+scale = Math.max(0.5, Math.min(initialScale * pinchScale, 3));
+drawCanvas();
+} else {
+drag(event);
+}
+});
+
+canvas.addEventListener('touchend', endDrag);
+
 canvas.addEventListener('wheel', event => {
 event.preventDefault();
 const minScale = 1080 / loadedImage.width;
@@ -72,11 +104,13 @@ offsetX = Math.min(0, Math.max(offsetX, canvas.width - loadedImage.width * scale
 offsetY = Math.min(canvas.height, Math.max(offsetY, -loadedImage.height * scale));
 drawCanvas();
 });
+
 function startDrag(event) {
 isDragging = true;
 lastMouseX = event.clientX || event.touches[0].clientX;
 lastMouseY = event.clientY || event.touches[0].clientY;
 }
+
 function drag(event) {
 event.preventDefault();
 if (isDragging) {
@@ -91,24 +125,11 @@ offsetY = Math.min(canvas.height, Math.max(offsetY, -loadedImage.height * scale)
 drawCanvas();
 }
 }
+
 function endDrag() {
 isDragging = false;
 }
-canvas.addEventListener('mousedown', startDrag);
-canvas.addEventListener('mousemove', drag);
-canvas.addEventListener('mouseup', endDrag);
-canvas.addEventListener('mouseleave', endDrag);
-if (isTouchDevice) {
-canvas.addEventListener('touchstart', (event) => {
-startDrag(event);
-document.body.style.overflow = 'hidden';
-});
-canvas.addEventListener('touchmove', drag);
-canvas.addEventListener('touchend', () => {
-endDrag();
-document.body.style.overflow = '';
-});
-}
+
 async function sharePhoto() {
 const dataUrl = canvas.toDataURL('image/png');
 try {
@@ -124,4 +145,4 @@ console.error('Erro ao compartilhar:', error);
 </body>
 </html>
 
-<!COPY WA CRIATIVA 1.1> 
+<!COPY WA CRIATIVA 2.0> 
