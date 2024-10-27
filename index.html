@@ -138,6 +138,7 @@
         let offsetY = 0;
         let isDragging = false;
         let lastMouseX, lastMouseY;
+        let lastTouchDistance = null;
     
         function selectFrame(frame) {
             selectedFrame = frame;
@@ -213,6 +214,58 @@
             isDragging = false;
         });
     
+        // Suporte para gestos de toque no dispositivo móvel
+        canvas.addEventListener('touchstart', function (event) {
+            if (event.touches.length === 2) {
+                lastTouchDistance = getTouchDistance(event.touches);
+            } else {
+                isDragging = true;
+                lastMouseX = event.touches[0].clientX;
+                lastMouseY = event.touches[0].clientY;
+            }
+            event.preventDefault();
+        });
+    
+        canvas.addEventListener('touchmove', function (event) {
+            if (isDragging && event.touches.length === 1) {
+                const dx = event.touches[0].clientX - lastMouseX;
+                const dy = event.touches[0].clientY - lastMouseY;
+                offsetX += dx;
+                offsetY += dy;
+                lastMouseX = event.touches[0].clientX;
+                lastMouseY = event.touches[0].clientY;
+                drawCanvas();
+            } else if (event.touches.length === 2) {
+                const currentDistance = getTouchDistance(event.touches);
+                if (lastTouchDistance) {
+                    const zoomFactor = currentDistance / lastTouchDistance;
+                    scale *= zoomFactor;
+                    scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
+    
+                    // Calcula o ponto médio entre os toques para ajustar o centro do zoom
+                    const midX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+                    const midY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+    
+                    offsetX -= (midX - canvas.width / 2) * (zoomFactor - 1);
+                    offsetY -= (midY - canvas.height / 2) * (zoomFactor - 1);
+    
+                    lastTouchDistance = currentDistance;
+                    drawCanvas();
+                }
+            }
+        });
+    
+        canvas.addEventListener('touchend', function () {
+            isDragging = false;
+            lastTouchDistance = null;
+        });
+    
+        function getTouchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+    
         async function sharePhoto() {
             const canvas = document.getElementById('canvas');
             
@@ -233,8 +286,9 @@
             } catch (error) {
                 console.error('Erro ao compartilhar:', error);
             }
-        }//copy criativa
+        }
     </script>
+    
     
        
 </body>
