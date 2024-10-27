@@ -187,7 +187,7 @@
         canvas.addEventListener('wheel', function (event) {
             event.preventDefault();
             scale += event.deltaY > 0 ? -0.1 : 0.1;
-            scale = Math.min(Math.max(0.5, scale), 3); // Limita o zoom entre 0.5 e 3
+            scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
             drawCanvas();
         });
 
@@ -236,7 +236,7 @@
             } else if (event.touches.length === 2 && lastTouchDistance !== null) {
                 const currentDistance = getTouchDistance(event.touches);
                 scale *= currentDistance / lastTouchDistance; // Ajusta a escala
-                scale = Math.min(Math.max(0.5, scale), 3); // Limita o zoom entre 0.5 e 3
+                scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
                 lastTouchDistance = currentDistance; // Atualiza a distância
                 drawCanvas();
             }
