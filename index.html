@@ -1,1 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Moldura</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a237e; /* Fundo escuro azulado */
+            color: #e0f7fa; /* Texto claro */
+        }
+
+        .container {
+            text-align: center;
+            background: #283593; /* Fundo do container em azul escuro */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            margin: 10px;
+        }
+
+        .frame-selector, .preview {
+            margin-bottom: 20px;
+        }
+
+        .frames {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .frame {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            border-radius: 15px;
+            border: 2px solid transparent;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .frame:hover, .frame.selected {
+            border-color: #64b5f6;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .canvas-container {
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 15px;
+            border: 1px solid #ccc;
+            cursor: pointer; /* Cursor para indicar que a área é clicável */
+        }
+
+        .upload-instruction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: #90caf9; /* Instruções em azul claro */
+            text-align: center;
+            pointer-events: none; /* Impede interações com o texto */
+            display: block; /* Inicialmente visível */
+        }
+
+        button {
+            padding: 15px 30px;
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
+        }
+
+        button:hover {
+            background-color: #1565c0;
+        }
+
+        @media (max-width: 600px) {
+            .frames {
+                justify-content: space-around;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="frame-selector">
+            <h2>Escolha uma Moldura</h2>
+            <div class="frames">
+                <img src="frame1.png" alt="Frame 1" class="frame" onclick="selectFrame('frame1.png')">
+                <img src="frame2.png" alt="Frame 2" class="frame" onclick="selectFrame('frame2.png')">
+                <img src="frame3.png" alt="Frame 3" class="frame" onclick="selectFrame('frame3.png')">
+                <img src="frame4.png" alt="Frame 4" class="frame" onclick="selectFrame('frame4.png')">
+            </div>
+        </div>
+        <div class="preview">
+            <h2>Pré-visualização</h2>
+            <div class="canvas-container">
+                <canvas id="canvas" width="1080" height="1920" onclick="triggerUpload()"></canvas>
+                <p class="upload-instruction">Clique para adicionar imagem.</p>
+            </div>
+        </div>
+        <button id="shareButton" onclick="sharePhoto()" disabled><b>Compartilhar ➤</b></button>
+    </div>
+
+    <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display: none;">
+
+    <script>
+        let selectedFrame = '';
+        let loadedImage = null;
+        let scale = 1;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let lastMouseX, lastMouseY;
+        let lastTouchDistance = null;
+
+        function triggerUpload() {
+            if (!loadedImage) {
+                document.getElementById('photoInput').click();
+            }
+        }
+
+        function selectFrame(frame) {
+            selectedFrame = frame;
+            document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
+            event.target.classList.add('selected');
+            drawCanvas();
+        }
+
+        function loadPhoto(event) {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const img = new Image();
+                img.onload = function () {
+                    loadedImage = img;
+                    drawCanvas();
+                    document.querySelector('.upload-instruction').style.display = 'none'; // Esconde as instruções após o upload
+                    document.getElementById('photoInput').style.display = 'none'; // Esconde o input após o upload
+                    document.getElementById('photoInput').disabled = true; // Desabilita a entrada após o upload
+                    document.getElementById('shareButton').disabled = false; // Habilita o botão de compartilhar
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function drawCanvas() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Desenha a imagem carregada
+            if (loadedImage) {
+                ctx.save();
+                ctx.translate(offsetX, offsetY);
+                ctx.scale(scale, scale);
+                ctx.drawImage(loadedImage, 0, 0);
+                ctx.restore();
+            }
+
+            // Desenha a moldura selecionada
+            if (selectedFrame) {
+                const frame = new Image();
+                frame.src = selectedFrame;
+                frame.onload = function () {
+                    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+                };
+            }
+        }
+
+        const canvas = document.getElementById('canvas');
+        canvas.addEventListener('wheel', function (event) {
+            event.preventDefault();
+            scale += event.deltaY > 0 ? -0.1 : 0.1;
+            scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
+            drawCanvas();
+        });
+
+        canvas.addEventListener('mousedown', function (event) {
+            isDragging = true;
+            lastMouseX = event.clientX;
+            lastMouseY = event.clientY;
+        });
+
+        canvas.addEventListener('mousemove', function (event) {
+            if (isDragging) {
+                const dx = event.clientX - lastMouseX;
+                const dy = event.clientY - lastMouseY;
+                offsetX += dx;
+                offsetY += dy;
+                lastMouseX = event.clientX;
+                lastMouseY = event.clientY;
+                drawCanvas();
+            }
+        });
+
+        canvas.addEventListener('mouseup', function () {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('touchstart', function (event) {
+            if (event.touches.length === 2) {
+                lastTouchDistance = getTouchDistance(event.touches);
+            } else {
+                isDragging = true;
+                lastMouseX = event.touches[0].clientX;
+                lastMouseY = event.touches[0].clientY;
+            }
+            event.preventDefault(); // Impede o scroll da página
+        });
+
+        canvas.addEventListener('touchmove', function (event) {
+            if (isDragging && event.touches.length === 1) {
+                const dx = event.touches[0].clientX - lastMouseX;
+                const dy = event.touches[0].clientY - lastMouseY;
+                offsetX += dx;
+                offsetY += dy;
+                lastMouseX = event.touches[0].clientX;
+                lastMouseY = event.touches[0].clientY;
+                drawCanvas();
+            } else if (event.touches.length === 2) {
+                const currentDistance = getTouchDistance(event.touches);
+                if (lastTouchDistance) {
+                    const zoomFactor = currentDistance / lastTouchDistance; // Calcula o fator de zoom
+                    scale *= zoomFactor; // Ajusta o scale
+                    scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
+                    drawCanvas();
+                }
+                lastTouchDistance = currentDistance; // Atualiza a distância
+            }
+            event.preventDefault(); // Impede o scroll da página
+        });
+
+        canvas.addEventListener('touchend', function () {
+            isDragging = false;
+            lastTouchDistance = null; // Reseta a distância
+        });
+
+        function getTouchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[0].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function sharePhoto() {
+            if (loadedImage && selectedFrame) {
+                const canvas = document.getElementById('canvas');
+                const dataURL = canvas.toDataURL('image/png');
+
+                const shareData = {
+                    title: 'Imagem com Moldura',
+                    text: 'Confira esta imagem!',
+                    url: dataURL
+                };
+
+                if (navigator.share) {
+                    navigator.share(shareData).then(() => {
+                        console.log('Compartilhado com sucesso!');
+                    }).catch((error) => {
+                        console.error('Erro ao compartilhar:', error);
+                        // Se a API de compartilhamento falhar, você pode fornecer uma opção de download
+                        const link = document.createElement('a');
+                        link.href = dataURL;
+                        link.download = 'imagem_com_moldura.png';
+                        link.click();
+                    });
+                } else {
+                    // Se o navegador não suporta a API de compartilhamento, fornece uma opção de download
+                    const link = document.createElement('a');
+                    link.href = dataURL;
+                    link.download = 'imagem_com_moldura.png';
+                    link.click();
+                }
+            } else {
+                alert('Por favor, adicione uma imagem e selecione uma moldura antes de compartilhar.');
+            }
+        }
+    </script>
+</body>
+</html>
 
