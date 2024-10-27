@@ -226,7 +226,7 @@
         });
 
         canvas.addEventListener('touchmove', function (event) {
-            if (isDragging && event.touches.length === 1) {
+            if (isDragging) {
                 const dx = event.touches[0].clientX - lastMouseX;
                 const dy = event.touches[0].clientY - lastMouseY;
                 offsetX += dx;
@@ -235,29 +235,21 @@
                 lastMouseY = event.touches[0].clientY;
                 drawCanvas();
             } else if (event.touches.length === 2) {
-                const currentDistance = getTouchDistance(event.touches);
-                if (lastTouchDistance) {
-                    const zoomFactor = currentDistance / lastTouchDistance; // Calcula o fator de zoom baseado na mudança de distância entre os dedos
-                    scale *= zoomFactor; // Ajusta a escala
+                const newTouchDistance = getTouchDistance(event.touches);
+                if (lastTouchDistance !== null) {
+                    const scaleChange = newTouchDistance / lastTouchDistance;
+                    scale *= scaleChange;
                     scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
-                    const midX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
-                    const midY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
-
-                    offsetX -= (midX - canvas.width / 2) * (zoomFactor - 1); // Ajusta o deslocamento X
-                    offsetY -= (midY - canvas.height / 2) * (zoomFactor - 1); // Ajusta o deslocamento Y
-
                     drawCanvas();
                 }
-                lastTouchDistance = currentDistance; // Atualiza a distância anterior
+                lastTouchDistance = newTouchDistance;
             }
-            event.preventDefault(); // Impede o scroll da página
+            event.preventDefault();
         });
 
-        canvas.addEventListener('touchend', function (event) {
-            if (event.touches.length < 2) {
-                lastTouchDistance = null;
-            }
+        canvas.addEventListener('touchend', function () {
             isDragging = false;
+            lastTouchDistance = null;
         });
 
         function getTouchDistance(touches) {
@@ -268,22 +260,25 @@
 
         function sharePhoto() {
             const canvas = document.getElementById('canvas');
-            canvas.toBlob(function (blob) {
-                const file = new File([blob], 'foto_com_moldura.png', { type: 'image/png' });
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Compartilhar Foto',
-                        text: 'Confira esta foto!',
-                        files: [file],
-                    }).then(() => {
-                        console.log('Foto compartilhada com sucesso!');
-                    }).catch((error) => {
-                        console.error('Erro ao compartilhar a foto:', error);
-                    });
-                } else {
-                    alert('Compartilhamento não suportado neste navegador.');
-                }
-            }, 'image/png');
+            const dataURL = canvas.toDataURL('image/png');
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Compartilhar Imagem',
+                    text: 'Veja esta imagem que criei!',
+                    files: [new File([dataURL], 'imagem-com-moldura.png', { type: 'image/png' })],
+                }).then(() => {
+                    console.log('Compartilhamento bem-sucedido!');
+                }).catch((error) => {
+                    console.error('Erro ao compartilhar:', error);
+                });
+            } else {
+                // Fallback para download
+                const link = document.createElement('a');
+                link.href = dataURL;
+                link.download = 'imagem-com-moldura.png';
+                link.click();
+            }
         }
     </script>
 </body>
