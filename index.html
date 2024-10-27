@@ -4,218 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seleção de Moldura</title>
-    <!-- Importando o Cropper.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.css" rel="stylesheet">
     <style>
-        /* Estilos para o container, botão e molduras */
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #1a237e;
-            color: #e0f7fa;
+            background-color: #f5f5f5;
+            color: #333;
         }
-
         .container {
             text-align: center;
-            background: #283593;
+            max-width: 90%;
+            width: 500px;
             padding: 20px;
-            border-radius: 15px;
+            background-color: #283593;
+            border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 500px;
-            margin: 10px;
         }
-
-        .button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px 30px;
-            background-color: #c0b0f6;
-            color: #0052a4;
+        h2 {
+            color: #e0f7fa;
+        }
+        .upload-button {
+            background-color: #1e88e5;
+            color: #ffffff;
+            padding: 12px 20px;
             border: none;
             border-radius: 10px;
             font-size: 16px;
-            font-weight: bold;
+            margin-top: 10px;
             cursor: pointer;
-            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background-color 0.3s ease;
         }
-
-        .button:hover {
-            background-color: #c0b0d8;
+        .upload-button:hover {
+            background-color: #1565c0;
         }
-
+        .icon {
+            margin-right: 8px;
+        }
         .preview {
-            width: 100%;
-            max-width: 300px;
             margin-top: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
-
-        .frames {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .frame {
-            width: 80px;
-            height: 80px;
-            cursor: pointer;
-            border-radius: 15px;
-            border: 2px solid transparent;
-            transition: transform 0.2s ease;
-        }
-
-        .frame:hover, .frame.selected {
-            border-color: #64b5f6;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transform: scale(1.1);
+        #canvas {
+            display: none;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #ccc;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Botão de upload com estilo unificado -->
-        <div class="button" onclick="document.getElementById('photoInput').click()">
-            <svg width="16" height="16" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h3l-4 4-4-4h3V7z"></path>
-            </svg>
-            Escolher Arquivo
-        </div>
-        <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="loadPhoto(event)">
+        <h2>Escolha uma Foto e Ajuste</h2>
+        <label class="upload-button">
+            <span class="icon">📁</span> Carregar Imagem
+            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+        </label>
 
-        <!-- Área de visualização para Cropper.js -->
         <div class="preview">
-            <img id="previewImage" style="max-width: 100%; display: none;">
-        </div>
-
-        <!-- Seleção de molduras -->
-        <h2>Escolha uma Moldura</h2>
-        <div class="frames">
-            <img src="frame1.png" alt="Frame 1" class="frame" onclick="selectFrame('frame1.png')">
-            <img src="frame2.png" alt="Frame 2" class="frame" onclick="selectFrame('frame2.png')">
+            <img id="photo" style="max-width: 100%; display: none; border-radius: 8px;">
         </div>
     </div>
-
-    <!-- Biblioteca Cropper.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script>
-        let cropper;
-        let selectedFrame = '';
-
-        function loadPhoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const img = document.getElementById('previewImage');
-                img.src = URL.createObjectURL(file);
-                img.style.display = 'block';
-
-                // Inicia o Cropper.js
-                if (cropper) {
-                    cropper.destroy(); // Reinicia o cropper se já estiver ativo
-                }
-                cropper = new Cropper(img, {
-                    aspectRatio: 1, // Mantém a imagem quadrada
-                    viewMode: 1,
-                    background: false,
-                    movable: true,
-                    zoomable: true,
-                    scalable: true,
-                    cropBoxResizable: true
-                });
-            }
-        }
-
-        function selectFrame(frame) {
-            selectedFrame = frame;
-            document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
-            event.target.classList.add('selected');
-        }
-    </script>
-</body>
-<!-- Continuação do HTML e do JavaScript -->
-<body>
-    <div class="container">
-        <!-- Botão para confirmar e aplicar moldura no canvas -->
-        <button class="button" onclick="applyFrame()">Aplicar Moldura</button>
-
-        <!-- Canvas de pré-visualização final com moldura -->
-        <div class="preview">
-            <canvas id="canvas" width="1080" height="1080" style="display: none;"></canvas>
-        </div>
-
-        <!-- Botão de compartilhamento -->
-        <button class="button" onclick="sharePhoto()">
-            <svg width="16" height="16" viewBox="0 0 24 24">
-                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.41 3.41 0 0 0 0-1.39l7.05-4.11a2.75 2.75 0 1 0-.92-1.81L8 9.54a3.45 3.45 0 1 0 0 4.92l7.11 4.15a2.75 2.75 0 1 0 .89-1.79z"></path>
-            </svg>
-            Compartilhar Foto
-        </button>
-    </div>
-
-    <script>
-        // Função para aplicar a moldura escolhida ao canvas
-        function applyFrame() {
-            if (!cropper) return;
-
-            // Obter a imagem recortada em formato Blob para aplicar ao canvas
-            cropper.getCroppedCanvas({
-                width: 1080,
-                height: 1080,
-            }).toBlob((blob) => {
-                const canvas = document.getElementById('canvas');
-                const ctx = canvas.getContext('2d');
-
-                // Limpa o canvas e torna visível
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                canvas.style.display = 'block';
-
-                // Desenha a imagem recortada no canvas
-                const img = new Image();
-                img.src = URL.createObjectURL(blob);
-                img.onload = function () {
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                    // Aplica a moldura sobre a imagem
-                    if (selectedFrame) {
-                        const frame = new Image();
-                        frame.src = selectedFrame;
-                        frame.onload = function () {
-                            ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
-                        };
-                    }
-                };
-            });
-        }
-
-        // Função para compartilhar a foto final com a moldura
-        function sharePhoto() {
-            const canvas = document.getElementById('canvas');
-            canvas.toBlob((blob) => {
-                const file = new File([blob], "foto-com-moldura.png", { type: "image/png" });
-
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Foto com Moldura',
-                        text: 'Veja minha foto com moldura!',
-                        files: [file]
-                    })
-                    .then(() => console.log('Compartilhamento bem-sucedido!'))
-                    .catch((error) => console.error('Erro ao compartilhar:', error));
-                } else {
-                    alert('A API de compartilhamento não é compatível com este navegador.');
-                }
-            });
-        }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
 </body>
 </html>
+<script>
+    let cropper;
+
+    document.getElementById('photoInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const img = document.getElementById('photo');
+            img.src = URL.createObjectURL(file);
+            img.style.display = 'block';
+
+            img.onload = function () {
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(img, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    responsive: true,
+                    zoomable: true,
+                    scalable: true,
+                    movable: true,
+                    dragMode: 'move',
+                    background: false
+                });
+            };
+        }
+    });
+
+    function applyFrame() {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 1080,
+            height: 1080
+        });
+        const ctx = canvas.getContext('2d');
+
+        const frame = new Image();
+        frame.src = selectedFrame;
+        frame.onload = () => {
+            ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+            document.getElementById('canvas').style.display = 'block';
+        };
+    }
+</script>
