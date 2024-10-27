@@ -30,14 +30,32 @@
             margin: 10px;
         }
 
-        /* Estilos para o cabeçalho */
-        header {
-            margin-bottom: 20px;
+        /* Estilos para o botão */
+        button {
+            padding: 15px 30px;
+            background-color: #f4a8b5; /* Cor personalizada */
+            color: #0052a4; /* Cor personalizada */
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Estilos para as seções de seleção de moldura, upload de foto e pré-visualização */
-        .frame-selector, .photo-upload, .preview {
-            margin-bottom: 20px;
+        /* Estilos para o hover do botão */
+        button:hover {
+            background-color: #d0888e;
+        }
+
+        /* Estilo do ícone de compartilhar */
+        button svg {
+            margin-right: 8px;
+            fill: #0052a4;
         }
 
         /* Estilos para o contêiner das molduras */
@@ -72,58 +90,15 @@
             height: auto;
             border-radius: 15px;
             border: 1px solid #ccc;
-        }
-
-        /* Estilos para o botão */
-        button {
-            padding: 15px 30px;
-            background-color: #1e88e5;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
-        }
-
-        /* Estilos para o hover do botão */
-        button:hover {
-            background-color: #1565c0;
-        }
-
-        /* Estilos responsivos */
-        @media (max-width: 600px) {
-            .frames {
-                justify-content: space-around;
-            }
-        }
-
-        /* Estilo do botão de upload */
-        .file-upload label {
-            background: #1e88e5;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            display: inline-block;
-        }
-
-        .file-upload label:hover {
-            background: #1565c0;
+            cursor: move;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="photo-upload">
-            <h2>Escolha uma Foto</h2>
-            <div class="file-upload">
-                <label for="photoInput">Escolher Arquivo</label>
-                <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display: none;">
-            </div>
+        <div class="file-upload">
+            <label for="photoInput">Escolher Arquivo</label>
+            <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display: none;">
         </div>
         <div class="frame-selector">
             <h2>Escolha uma Moldura</h2>
@@ -138,12 +113,20 @@
             <h2>Pré-visualização</h2>
             <canvas id="canvas" width="1080" height="1920"></canvas>
         </div>
-        <button onclick="sharePhoto()"><b>Compartilhar ➤</b></button>
+        <button onclick="sharePhoto()">
+            <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M18 16.08C17.24 16.08 16.56 16.38 16.03 16.88L8.91 12.7C8.96 12.47 9 12.24 9 12C9 11.76 8.96 11.53 8.91 11.3L15.96 7.21C16.5 7.75 17.23 8.08 18 8.08C19.66 8.08 21 6.74 21 5.08C21 3.42 19.66 2.08 18 2.08C16.34 2.08 15 3.42 15 5.08C15 5.32 15.04 5.55 15.09 5.78L8.04 9.87C7.5 9.33 6.77 9 6 9C4.34 9 3 10.34 3 12C3 13.66 4.34 15 6 15C6.77 15 7.5 14.67 8.04 14.13L15.16 18.32C15.11 18.54 15.08 18.77 15.08 19C15.08 20.66 16.42 22 18.08 22C19.74 22 21.08 20.66 21.08 19C21.08 17.34 19.74 16.08 18 16.08Z"></path>
+            </svg>
+            Compartilhar
+        </button>
     </div>
 
     <script>
         let selectedFrame = '';
         let loadedImage = null;
+        let imgX = 0, imgY = 0, imgScale = 1;
+        let isDragging = false;
+        let startX, startY;
 
         function selectFrame(frame) {
             selectedFrame = frame;
@@ -158,6 +141,9 @@
                 const img = new Image();
                 img.onload = function () {
                     loadedImage = img;
+                    imgX = 0;
+                    imgY = 0;
+                    imgScale = 1;
                     drawCanvas();
                 };
                 img.src = reader.result;
@@ -171,23 +157,9 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (loadedImage) {
-                const imgAspectRatio = loadedImage.width / loadedImage.height;
-                const canvasAspectRatio = canvas.width / canvas.height;
-                let drawWidth, drawHeight, offsetX, offsetY;
-
-                if (imgAspectRatio > canvasAspectRatio) {
-                    drawWidth = canvas.width;
-                    drawHeight = drawWidth / imgAspectRatio;
-                    offsetX = 0;
-                    offsetY = (canvas.height - drawHeight) / 2;
-                } else {
-                    drawHeight = canvas.height;
-                    drawWidth = drawHeight * imgAspectRatio;
-                    offsetX = (canvas.width - drawWidth) / 2;
-                    offsetY = 0;
-                }
-
-                ctx.drawImage(loadedImage, offsetX, offsetY, drawWidth, drawHeight);
+                const width = loadedImage.width * imgScale;
+                const height = loadedImage.height * imgScale;
+                ctx.drawImage(loadedImage, imgX, imgY, width, height);
             }
 
             if (selectedFrame) {
@@ -198,6 +170,38 @@
                 };
             }
         }
+
+        function zoomImage(event) {
+            event.preventDefault();
+            imgScale += event.deltaY * -0.01;
+            imgScale = Math.min(Math.max(0.5, imgScale), 3);
+            drawCanvas();
+        }
+
+        function startDrag(event) {
+            isDragging = true;
+            startX = event.clientX;
+            startY = event.clientY;
+        }
+
+        function stopDrag() {
+            isDragging = false;
+        }
+
+        function dragImage(event) {
+            if (isDragging) {
+                imgX += event.clientX - startX;
+                imgY += event.clientY - startY;
+                startX = event.clientX;
+                startY = event.clientY;
+                drawCanvas();
+            }
+        }
+
+        document.getElementById('canvas').addEventListener('wheel', zoomImage);
+        document.getElementById('canvas').addEventListener('mousedown', startDrag);
+        document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('mousemove', dragImage);
 
         function sharePhoto() {
             const canvas = document.getElementById('canvas');
