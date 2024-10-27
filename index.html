@@ -5,295 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seleção de Moldura</title>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #4E4A9C; /* Fundo roxo escuro */
-            color: #DFB1B7; /* Texto em tom suave */
-        }
-
-        .container {
-            text-align: center;
-            background: #4E4A9C; /* Fundo do container roxo */
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            max-width: 500px;
-            margin: 10px;
-        }
-
-        header {
-            margin-bottom: 20px;
-            color: #F4909E;
-        }
-
-        .frame-selector, .photo-upload, .preview {
-            margin-bottom: 20px;
-        }
-
-        .frames {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .frame {
-            width: 80px;
-            height: 80px;
-            cursor: pointer;
-            border-radius: 15px;
-            border: 2px solid transparent;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .frame:hover, .frame.selected {
-            border-color: #F4909E;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            transform: scale(1.1);
-        }
-
-        canvas {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
-            border-radius: 15px;
-            border: 1px solid #858BC4;
-        }
-
-        button {
-            padding: 15px 30px;
-            background-color: #EE3D84;
-            color: #DFB1B7;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        }
-
-        button:hover {
-            background-color: #EE3F41;
-        }
-
-        .file-upload label {
-            background: #EE3D84;
-            color: #DFB1B7;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            display: inline-block;
-        }
-
-        .file-upload label:hover {
-            background: #EE3F41;
-        }
-
-        @media (max-width: 600px) {
-            .frames {
-                justify-content: space-around;
-            }
-        }
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #4E4A9C; color: #DFB1B7; margin: 0; }
+        .container { text-align: center; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); width: 90%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        label { background: #FC92A0; color: #523E93; padding: 10px 20px; border-radius: 10px; cursor: pointer; display: inline-block; margin-bottom: 20px; text-align: center; box-shadow: 0 4px #AA647B; transition: transform 0.2s, box-shadow 0.2s; }
+        label:active { transform: translateY(4px); box-shadow: 0 2px #AA647B; }
+        .frames { display: flex; justify-content: center; gap: 10px; }
+        .frame { width: 80px; height: 80px; cursor: pointer; border-radius: 15px; border: 2px solid transparent; transition: transform 0.2s; }
+        .frame:hover, .frame.selected { border-color: #F4909E; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transform: scale(1.1); }
+        canvas { width: 100%; max-width: 300px; border-radius: 15px; border: 1px solid #858BC4; }
+        button { padding: 15px 30px; background: #FC92A0; color: #523E93; border: none; border-radius: 10px; cursor: pointer; text-align: center; font-size: 16px; display: inline-block; margin-top: 20px; box-shadow: 0 6px #AA647B; transition: transform 0.2s, box-shadow 0.2s; }
+        button:active { transform: translateY(6px); box-shadow: 0 3px #AA647B; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="photo-upload">
-            <h2>Escolha uma Foto</h2>
-            <div class="file-upload">
-                <label for="photoInput">Escolher Arquivo</label>
-                <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display: none;">
-            </div>
+        <label for="photoInput">Escolher Arquivo</label>
+        <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display:none;">
+        <div class="frames">
+            <img src="frame1.png" class="frame" onclick="selectFrame('frame1.png')">
+            <img src="frame2.png" class="frame" onclick="selectFrame('frame2.png')">
+            <img src="frame3.png" class="frame" onclick="selectFrame('frame3.png')">
+            <img src="frame4.png" class="frame" onclick="selectFrame('frame4.png')">
         </div>
-        <div class="frame-selector">
-            <h2>Escolha uma Moldura</h2>
-            <div class="frames">
-                <img src="frame1.png" alt="Frame 1" class="frame" onclick="selectFrame('frame1.png')">
-                <img src="frame2.png" alt="Frame 2" class="frame" onclick="selectFrame('frame2.png')">
-                <img src="frame3.png" alt="Frame 3" class="frame" onclick="selectFrame('frame3.png')">
-                <img src="frame4.png" alt="Frame 4" class="frame" onclick="selectFrame('frame4.png')">
-            </div>
-        </div>
-        <div class="preview">
-            <h2>Pré-visualização</h2>
-            <canvas id="canvas" width="1080" height="1920"></canvas>
-        </div>
-        <button onclick="sharePhoto()"><b>Compartilhar ➤</b></button>
+        <canvas id="canvas" width="1080" height="1920"></canvas>
+        <button onclick="sharePhoto()">Compartilhar ➤</button>
     </div>
-
     <script>
-    let selectedFrame = '';
-    let loadedImage = null;
-    let scale = 1;
-    let offsetX = 0;
-    let offsetY = 0;
-    let isDragging = false;
-    let lastMouseX, lastMouseY;
-    let lastTouchDistance = null;
-
-    function selectFrame(frame) {
-        selectedFrame = frame;
-        document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
-        event.target.classList.add('selected');
-        drawCanvas();
-    }
-
-    function loadPhoto(event) {
-        const reader = new FileReader();
-        reader.onload = function () {
-            const img = new Image();
-            img.onload = function () {
-                loadedImage = img;
-                drawCanvas();
-            };
-            img.src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    function drawCanvas() {
+        let selectedFrame = '', loadedImage = null, scale = 1, offsetX = 0, offsetY = 0, isDragging = false, lastMouseX, lastMouseY;
+        function selectFrame(frame) { selectedFrame = frame; document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected')); event.target.classList.add('selected'); drawCanvas(); }
+        function loadPhoto(event) { const reader = new FileReader(); reader.onload = () => { loadedImage = new Image(); loadedImage.onload = drawCanvas; loadedImage.src = reader.result; }; reader.readAsDataURL(event.target.files[0]); }
+        function drawCanvas() { const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); if (loadedImage) { ctx.save(); ctx.translate(offsetX, offsetY); ctx.scale(scale, scale); ctx.drawImage(loadedImage, 0, 0); ctx.restore(); } if (selectedFrame) { const frame = new Image(); frame.src = selectedFrame; frame.onload = () => ctx.drawImage(frame, 0, 0, canvas.width, canvas.height); } }
         const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Desenha a imagem carregada
-        if (loadedImage) {
-            ctx.save();
-            ctx.translate(offsetX, offsetY);
-            ctx.scale(scale, scale);
-            ctx.drawImage(loadedImage, 0, 0);
-            ctx.restore();
-        }
-
-        // Desenha a moldura selecionada
-        if (selectedFrame) {
-            const frame = new Image();
-            frame.src = selectedFrame;
-            frame.onload = function () {
-                ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
-            };
-        }
-    }
-
-    const canvas = document.getElementById('canvas');
-    canvas.addEventListener('wheel', function (event) {
-        event.preventDefault();
-        scale += event.deltaY > 0 ? -0.1 : 0.1;
-        scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
-        drawCanvas();
-    });
-
-    canvas.addEventListener('mousedown', function (event) {
-        isDragging = true;
-        lastMouseX = event.clientX;
-        lastMouseY = event.clientY;
-    });
-
-    canvas.addEventListener('mousemove', function (event) {
-        if (isDragging) {
-            const dx = event.clientX - lastMouseX;
-            const dy = event.clientY - lastMouseY;
-            offsetX += dx;
-            offsetY += dy;
-            lastMouseX = event.clientX;
-            lastMouseY = event.clientY;
-            drawCanvas();
-        }
-    });
-
-    canvas.addEventListener('mouseup', function () {
-        isDragging = false;
-    });
-
-    // Suporte para gestos de toque no dispositivo móvel
-    canvas.addEventListener('touchstart', function (event) {
-        if (event.touches.length === 2) {
-            lastTouchDistance = getTouchDistance(event.touches);
-            event.preventDefault(); // Impede o zoom padrão do navegador
-        } else if (event.touches.length === 1) {
-            isDragging = true;
-            lastMouseX = event.touches[0].clientX;
-            lastMouseY = event.touches[0].clientY;
-        }
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', function (event) {
-        if (isDragging && event.touches.length === 1) {
-            const dx = event.touches[0].clientX - lastMouseX;
-            const dy = event.touches[0].clientY - lastMouseY;
-            offsetX += dx;
-            offsetY += dy;
-            lastMouseX = event.touches[0].clientX;
-            lastMouseY = event.touches[0].clientY;
-            drawCanvas();
-            event.preventDefault();
-        } else if (event.touches.length === 2) {
-            const currentDistance = getTouchDistance(event.touches);
-            if (lastTouchDistance) {
-                const zoomFactor = currentDistance / lastTouchDistance;
-                scale *= zoomFactor;
-                scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
-
-                // Calcula o ponto médio entre os toques para ajustar o centro do zoom
-                const midX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
-                const midY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
-
-                offsetX -= (midX - canvas.width / 2) * (zoomFactor - 1);
-                offsetY -= (midY - canvas.height / 2) * (zoomFactor - 1);
-
-                lastTouchDistance = currentDistance;
-                drawCanvas();
-            }
-            event.preventDefault(); // Impede o zoom padrão do navegador
-        }
-    }, { passive: false });
-
-    canvas.addEventListener('touchend', function () {
-        isDragging = false;
-        lastTouchDistance = null;
-    });
-
-    function getTouchDistance(touches) {
-        const dx = touches[0].clientX - touches[1].clientX;
-        const dy = touches[0].clientY - touches[1].clientY;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    async function sharePhoto() {
-        const canvas = document.getElementById('canvas');
-        
-        // Converte o conteúdo do canvas em uma URL de dados base64
-        const dataUrl = canvas.toDataURL('image/png');
-
-        try {
-            // Cria um arquivo a partir do data URL
-            const response = await fetch(dataUrl);
-            const blob = await response.blob();
-            const file = new File([blob], 'imagem.png', { type: 'image/png' });
-
-            await navigator.share({
-                title: 'Imagem com Moldura',
-                text: 'Confira esta imagem que criei!',
-                files: [file]
-            });
-        } catch (error) {
-            console.error('Erro ao compartilhar:', error);
-        }
-    }
-        // COPY WA CRIATIVE
-</script> 
-
-    
-    
-       
+        canvas.addEventListener('wheel', event => { event.preventDefault(); const minScale = 1080 / loadedImage.width; scale = Math.max(minScale, Math.min(scale + (event.deltaY > 0 ? -0.1 : 0.1), 3)); offsetX = Math.min(0, Math.max(offsetX, canvas.width - loadedImage.width * scale)); offsetY = Math.min(canvas.height, Math.max(offsetY, -loadedImage.height * scale)); drawCanvas(); });
+        canvas.addEventListener('mousedown', event => { isDragging = true; lastMouseX = event.clientX; lastMouseY = event.clientY; });
+        canvas.addEventListener('mousemove', event => { if (isDragging) { offsetX += event.clientX - lastMouseX; offsetY += event.clientY - lastMouseY; lastMouseX = event.clientX; lastMouseY = event.clientY; offsetX = Math.min(0, Math.max(offsetX, canvas.width - loadedImage.width * scale)); offsetY = Math.min(canvas.height, Math.max(offsetY, -loadedImage.height * scale)); drawCanvas(); } });
+        canvas.addEventListener('mouseup', () => isDragging = false);
+        canvas.addEventListener('mouseleave', () => isDragging = false);
+        async function sharePhoto() { const dataUrl = canvas.toDataURL('image/png'); try { const response = await fetch(dataUrl); const blob = await response.blob(); const file = new File([blob], 'imagem.png', { type: 'image/png' }); await navigator.share({ title: 'Imagem com Moldura', text: 'Confira esta imagem que criei!', files: [file] }); } catch (error) { console.error('Erro ao compartilhar:', error); } }
+    </script>
 </body>
 </html>
