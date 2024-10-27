@@ -28,7 +28,11 @@
             margin: 10px;
         }
 
-        .frame-selector, .preview {
+        header {
+            margin-bottom: 20px;
+        }
+
+        .frame-selector, .photo-upload, .preview {
             margin-bottom: 20px;
         }
 
@@ -54,29 +58,12 @@
             transform: scale(1.1);
         }
 
-        .canvas-container {
-            position: relative;
-        }
-
         canvas {
             width: 100%;
             max-width: 300px;
             height: auto;
             border-radius: 15px;
             border: 1px solid #ccc;
-            cursor: pointer; /* Cursor para indicar que a área é clicável */
-        }
-
-        .upload-instruction {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 14px;
-            color: #90caf9; /* Instruções em azul claro */
-            text-align: center;
-            pointer-events: none; /* Impede interações com o texto */
-            display: block; /* Inicialmente visível */
         }
 
         button {
@@ -101,10 +88,31 @@
                 justify-content: space-around;
             }
         }
+
+        .file-upload label {
+            background: #1e88e5;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: inline-block;
+        }
+
+        .file-upload label:hover {
+            background: #1565c0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="photo-upload">
+            <h2>Escolha uma Foto</h2>
+            <div class="file-upload">
+                <label for="photoInput">Escolher Arquivo</label>
+                <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display: none;">
+            </div>
+        </div>
         <div class="frame-selector">
             <h2>Escolha uma Moldura</h2>
             <div class="frames">
@@ -116,15 +124,10 @@
         </div>
         <div class="preview">
             <h2>Pré-visualização</h2>
-            <div class="canvas-container">
-                <canvas id="canvas" width="1080" height="1920" onclick="triggerUpload()"></canvas>
-                <p class="upload-instruction">Clique para adicionar imagem.</p>
-            </div>
+            <canvas id="canvas" width="1080" height="1920"></canvas>
         </div>
-        <button id="shareButton" onclick="sharePhoto()" disabled><b>Compartilhar ➤</b></button>
+        <button onclick="sharePhoto()"><b>Compartilhar ➤</b></button>
     </div>
-
-    <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display: none;">
 
     <script>
         let selectedFrame = '';
@@ -135,12 +138,6 @@
         let isDragging = false;
         let lastMouseX, lastMouseY;
         let lastTouchDistance = null;
-
-        function triggerUpload() {
-            if (!loadedImage) {
-                document.getElementById('photoInput').click();
-            }
-        }
 
         function selectFrame(frame) {
             selectedFrame = frame;
@@ -156,10 +153,6 @@
                 img.onload = function () {
                     loadedImage = img;
                     drawCanvas();
-                    document.querySelector('.upload-instruction').style.display = 'none'; // Esconde as instruções após o upload
-                    document.getElementById('photoInput').style.display = 'none'; // Esconde o input após o upload
-                    document.getElementById('photoInput').disabled = true; // Desabilita a entrada após o upload
-                    document.getElementById('shareButton').disabled = false; // Habilita o botão de compartilhar
                 };
                 img.src = reader.result;
             };
@@ -243,61 +236,45 @@
             } else if (event.touches.length === 2) {
                 const currentDistance = getTouchDistance(event.touches);
                 if (lastTouchDistance) {
-                    const zoomFactor = currentDistance / lastTouchDistance; // Calcula o fator de zoom
-                    scale *= zoomFactor; // Ajusta o scale
+                    const zoomFactor = currentDistance / lastTouchDistance; // Calcula o fator de zoom baseado na mudança de distância entre os dedos
+                    scale *= zoomFactor; // Ajusta a escala
                     scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
+                    const midX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+                    const midY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+
+                    offsetX -= (midX - canvas.width / 2) * (zoomFactor - 1); // Ajusta o deslocamento X
+                    offsetY -= (midY - canvas.height / 2) * (zoomFactor - 1); // Ajusta o deslocamento Y
+                    lastTouchDistance = currentDistance;
                     drawCanvas();
                 }
-                lastTouchDistance = currentDistance; // Atualiza a distância
             }
-            event.preventDefault(); // Impede o scroll da página
         });
 
         canvas.addEventListener('touchend', function () {
             isDragging = false;
-            lastTouchDistance = null; // Reseta a distância
+            lastTouchDistance = null; // Reseta a distância ao finalizar o toque
         });
 
         function getTouchDistance(touches) {
             const dx = touches[0].clientX - touches[1].clientX;
-            const dy = touches[0].clientY - touches[0].clientY;
+            const dy = touches[0].clientY - touches[1].clientY;
             return Math.sqrt(dx * dx + dy * dy);
         }
 
-        function sharePhoto() {
-            if (loadedImage && selectedFrame) {
-                const canvas = document.getElementById('canvas');
-                const dataURL = canvas.toDataURL('image/png');
+        async function sharePhoto() {
+            const canvas = document.getElementById('canvas');
+            const dataUrl = canvas.toDataURL('image/png');
 
-                const shareData = {
+            try {
+                await navigator.share({
                     title: 'Imagem com Moldura',
-                    text: 'Confira esta imagem!',
-                    url: dataURL
-                };
-
-                if (navigator.share) {
-                    navigator.share(shareData).then(() => {
-                        console.log('Compartilhado com sucesso!');
-                    }).catch((error) => {
-                        console.error('Erro ao compartilhar:', error);
-                        // Se a API de compartilhamento falhar, você pode fornecer uma opção de download
-                        const link = document.createElement('a');
-                        link.href = dataURL;
-                        link.download = 'imagem_com_moldura.png';
-                        link.click();
-                    });
-                } else {
-                    // Se o navegador não suporta a API de compartilhamento, fornece uma opção de download
-                    const link = document.createElement('a');
-                    link.href = dataURL;
-                    link.download = 'imagem_com_moldura.png';
-                    link.click();
-                }
-            } else {
-                alert('Por favor, adicione uma imagem e selecione uma moldura antes de compartilhar.');
+                    text: 'Confira esta imagem que criei!',
+                    files: [new File([dataUrl], 'image.png', { type: 'image/png' })]
+                });
+            } catch (error) {
+                console.error('Erro ao compartilhar:', error);
             }
         }
     </script>
 </body>
 </html>
-
