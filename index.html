@@ -13,16 +13,16 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #1a237e; /* Fundo escuro azulado */
-            color: #e0f7fa; /* Texto claro */
+            background-color: #4E4A9C; /* Fundo roxo escuro */
+            color: #DFB1B7; /* Texto em tom suave */
         }
 
         .container {
             text-align: center;
-            background: #283593; /* Fundo do container em azul escuro */
+            background: #4E4A9C; /* Fundo do container roxo */
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             width: 90%;
             max-width: 500px;
             margin: 10px;
@@ -30,6 +30,7 @@
 
         header {
             margin-bottom: 20px;
+            color: #F4909E;
         }
 
         .frame-selector, .photo-upload, .preview {
@@ -53,8 +54,8 @@
         }
 
         .frame:hover, .frame.selected {
-            border-color: #64b5f6;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-color: #F4909E;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             transform: scale(1.1);
         }
 
@@ -63,35 +64,29 @@
             max-width: 300px;
             height: auto;
             border-radius: 15px;
-            border: 1px solid #ccc;
+            border: 1px solid #858BC4;
         }
 
         button {
             padding: 15px 30px;
-            background-color: #1e88e5;
-            color: white;
+            background-color: #EE3D84;
+            color: #DFB1B7;
             border: none;
             border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
 
         button:hover {
-            background-color: #1565c0;
-        }
-
-        @media (max-width: 600px) {
-            .frames {
-                justify-content: space-around;
-            }
+            background-color: #EE3F41;
         }
 
         .file-upload label {
-            background: #1e88e5;
-            color: white;
+            background: #EE3D84;
+            color: #DFB1B7;
             padding: 10px 20px;
             border-radius: 10px;
             cursor: pointer;
@@ -100,7 +95,13 @@
         }
 
         .file-upload label:hover {
-            background: #1565c0;
+            background: #EE3F41;
+        }
+
+        @media (max-width: 600px) {
+            .frames {
+                justify-content: space-around;
+            }
         }
     </style>
 </head>
@@ -137,15 +138,14 @@
         let offsetY = 0;
         let isDragging = false;
         let lastMouseX, lastMouseY;
-        let lastTouchDistance = null;
-
+    
         function selectFrame(frame) {
             selectedFrame = frame;
             document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
             event.target.classList.add('selected');
             drawCanvas();
         }
-
+    
         function loadPhoto(event) {
             const reader = new FileReader();
             reader.onload = function () {
@@ -158,12 +158,12 @@
             };
             reader.readAsDataURL(event.target.files[0]);
         }
-
+    
         function drawCanvas() {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
             // Desenha a imagem carregada
             if (loadedImage) {
                 ctx.save();
@@ -172,7 +172,7 @@
                 ctx.drawImage(loadedImage, 0, 0);
                 ctx.restore();
             }
-
+    
             // Desenha a moldura selecionada
             if (selectedFrame) {
                 const frame = new Image();
@@ -182,7 +182,7 @@
                 };
             }
         }
-
+    
         const canvas = document.getElementById('canvas');
         canvas.addEventListener('wheel', function (event) {
             event.preventDefault();
@@ -190,13 +190,13 @@
             scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
             drawCanvas();
         });
-
+    
         canvas.addEventListener('mousedown', function (event) {
             isDragging = true;
             lastMouseX = event.clientX;
             lastMouseY = event.clientY;
         });
-
+    
         canvas.addEventListener('mousemove', function (event) {
             if (isDragging) {
                 const dx = event.clientX - lastMouseX;
@@ -208,73 +208,34 @@
                 drawCanvas();
             }
         });
-
+    
         canvas.addEventListener('mouseup', function () {
             isDragging = false;
         });
-
-        canvas.addEventListener('touchstart', function (event) {
-            if (event.touches.length === 2) {
-                lastTouchDistance = getTouchDistance(event.touches);
-            } else {
-                isDragging = true;
-                lastMouseX = event.touches[0].clientX;
-                lastMouseY = event.touches[0].clientY;
-            }
-            event.preventDefault(); // Impede o scroll da página
-        });
-
-        canvas.addEventListener('touchmove', function (event) {
-            if (isDragging && event.touches.length === 1) {
-                const dx = event.touches[0].clientX - lastMouseX;
-                const dy = event.touches[0].clientY - lastMouseY;
-                offsetX += dx;
-                offsetY += dy;
-                lastMouseX = event.touches[0].clientX;
-                lastMouseY = event.touches[0].clientY;
-                drawCanvas();
-            } else if (event.touches.length === 2) {
-                const currentDistance = getTouchDistance(event.touches);
-                if (lastTouchDistance) {
-                    const zoomFactor = currentDistance / lastTouchDistance; // Calcula o fator de zoom baseado na mudança de distância entre os dedos
-                    scale *= zoomFactor; // Ajusta a escala
-                    scale = Math.min(Math.max(0.2, scale), 3); // Limita o zoom entre 0.2 e 3
-                    const midX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
-                    const midY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
-
-                    offsetX -= (midX - canvas.width / 2) * (zoomFactor - 1); // Ajusta o deslocamento X
-                    offsetY -= (midY - canvas.height / 2) * (zoomFactor - 1); // Ajusta o deslocamento Y
-                    lastTouchDistance = currentDistance;
-                    drawCanvas();
-                }
-            }
-        });
-
-        canvas.addEventListener('touchend', function () {
-            isDragging = false;
-            lastTouchDistance = null; // Reseta a distância ao finalizar o toque
-        });
-
-        function getTouchDistance(touches) {
-            const dx = touches[0].clientX - touches[1].clientX;
-            const dy = touches[0].clientY - touches[1].clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
+    
         async function sharePhoto() {
             const canvas = document.getElementById('canvas');
+            
+            // Converte o conteúdo do canvas em uma URL de dados base64
             const dataUrl = canvas.toDataURL('image/png');
-
+    
             try {
+                // Cria um arquivo a partir do data URL
+                const response = await fetch(dataUrl);
+                const blob = await response.blob();
+                const file = new File([blob], 'imagem.png', { type: 'image/png' });
+    
                 await navigator.share({
                     title: 'Imagem com Moldura',
                     text: 'Confira esta imagem que criei!',
-                    files: [new File([dataUrl], 'image.png', { type: 'image/png' })]
+                    files: [file]
                 });
             } catch (error) {
                 console.error('Erro ao compartilhar:', error);
             }
         }
     </script>
+    
+       
 </body>
 </html>
