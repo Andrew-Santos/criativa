@@ -126,6 +126,7 @@
     <div id="splash"><img src="criativavertical.png" alt="Logo"><div class="loader"></div></div>
     
     <!-- Logo centralizada com link -->
+     
     <div class="container">
         <a href="https://seulink.com" target="_blank" id="logo-link">
             <img src="criativaazul.png" alt="Logo" id="logo">
@@ -155,6 +156,26 @@
         <canvas id="canvas" width="1080" height="1920"></canvas>
         <button onclick="sharePhoto()">🚀 Compartilhar </button>
     </div>
+    <div class="container">
+        <img src="criativavertical.png" alt="Logo">
+        <h1>Acesso Restrito!</h1>
+        <p>Esta página só pode ser acessada por dispositivos móveis. Por favor, utilize seu celular para continuar.</p>
+    </div>
+    <script>
+        // Verifica se a tela é maior que um determinado valor (aqui, 768px)
+        if (window.innerWidth > 768) {
+            document.body.innerHTML = `
+                 <a href="https://www.instagram.com/mkt.agenciacriativa/?igsh=NDR3c3pqbTEzMTZj" style="text-decoration: none; color: inherit;"><div class="container">
+                    <img src="criativaazul.png" alt="Logo">
+                    <h1 style="color:#523E93;">Acesso Restrito!</h1>
+                    <p style="color:#523E93;">Esta página só pode ser acessada por dispositivos móveis.</p>
+                </div></a>
+            `;
+        } else {
+            // Se estiver em um dispositivo móvel, você pode carregar o conteúdo da sua página original aqui
+            // Por exemplo: window.location.href = 'sua_pagina_movel.html';
+        }
+    </script>
 
     <script>
         window.addEventListener("load", () => {
@@ -318,4 +339,4 @@
 </body>
 </html>
 
-<!COPY WA CRIATIVA 5.0> 
+<!COPY WA CRIATIVA 6.0> 
