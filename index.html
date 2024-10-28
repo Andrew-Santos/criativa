@@ -212,25 +212,28 @@
         }
 
         function drawImage() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (loadedImage) {
-                // Centraliza a imagem no canvas
-                const imgWidth = loadedImage.width * scale;
-                const imgHeight = loadedImage.height * scale;
-                const x = (canvas.width / 2) - (imgWidth / 2) + offsetX;
-                const y = (canvas.height / 2) - (imgHeight / 2) + offsetY;
-                ctx.drawImage(loadedImage, x, y, imgWidth, imgHeight);
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Desenha a imagem carregada se existir
+    if (loadedImage) {
+        const imgWidth = loadedImage.width * scale;
+        const imgHeight = loadedImage.height * scale;
+        const x = (canvas.width / 2) - (imgWidth / 2) + offsetX;
+        const y = (canvas.height / 2) - (imgHeight / 2) + offsetY;
+        ctx.drawImage(loadedImage, x, y, imgWidth, imgHeight);
+    }
 
-                // Desenha a moldura selecionada
-                const frameImage = new Image();
-                frameImage.src = selectedFrame;
-                frameImage.onload = () => {
-                    ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
-                };
-            }
-        }
+    // Desenha a moldura selecionada se existir
+    if (selectedFrame) {
+        const frameImage = new Image();
+        frameImage.src = selectedFrame;
+        frameImage.onload = () => {
+            ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+        };
+    }
+}
 
         function sharePhoto() {
             const canvas = document.getElementById('canvas');
