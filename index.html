@@ -311,7 +311,7 @@
             }
         });
 
-        function sharePhoto() {
+       /* function sharePhoto() {
             const canvas = document.getElementById('canvas');
             canvas.toBlob(blob => {
                 const url = URL.createObjectURL(blob);
@@ -322,7 +322,27 @@
                 a.click();
                 document.body.removeChild(a);
             }, 'image/png');
-        }
+        }*/
+        async function sharePhoto() {
+    const canvas = document.getElementById('canvas');
+    const dataUrl = canvas.toDataURL('image/png');
+    
+    try {
+        const response = await fetch(dataUrl);
+        const blob = await response.blob();
+        const file = new File([blob], 'imagem-com-moldura.png', { type: 'image/png' });
+        
+        // Usando a API de compartilhamento para enviar a imagem
+        await navigator.share({
+            title: 'Imagem com Moldura',
+            text: 'Confira esta imagem que criei!',
+            files: [file]
+        });
+    } catch (error) {
+        console.error('Erro ao compartilhar:', error);
+    }
+}
+
     </script>
 </body>
 </html>
