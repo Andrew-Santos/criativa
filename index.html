@@ -212,26 +212,50 @@
         }
 
         function drawImage() {
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Desenha a imagem carregada se existir
-    if (loadedImage) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Desenha a imagem carregada se existir
+            if (loadedImage) {
+        // Calcular largura e altura da imagem redimensionada
         const imgWidth = loadedImage.width * scale;
         const imgHeight = loadedImage.height * scale;
-        const x = (canvas.width / 2) - (imgWidth / 2) + offsetX;
-        const y = (canvas.height / 2) - (imgHeight / 2) + offsetY;
-        ctx.drawImage(loadedImage, x, y, imgWidth, imgHeight);
-    }
 
-    // Desenha a moldura selecionada se existir
-    if (selectedFrame) {
+        // Verifica se a imagem redimensionada está menor que o canvas
+        if (imgWidth < canvas.width) {
+            scale = canvas.width / loadedImage.width; // Ajusta a escala para preencher a largura do canvas
+        }
+        if (imgHeight < canvas.height) {
+            scale = canvas.height / loadedImage.height; // Ajusta a escala para preencher a altura do canvas
+        }
+
+        // Recalcula a largura e altura da imagem após os ajustes
+        const adjustedImgWidth = loadedImage.width * scale;
+        const adjustedImgHeight = loadedImage.height * scale;
+
+        // Centraliza a imagem no canvas
+        const x = (canvas.width / 2) - (adjustedImgWidth / 2) + offsetX;
+        const y = (canvas.height / 2) - (adjustedImgHeight / 2) + offsetY;
+
+        // Desenha a imagem no canvas
+        ctx.drawImage(loadedImage, x, y, adjustedImgWidth, adjustedImgHeight);
+
+        // Desenha a moldura selecionada
         const frameImage = new Image();
         frameImage.src = selectedFrame;
         frameImage.onload = () => {
             ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
         };
+    }
+
+    // Desenha a moldura selecionada se existir
+            if (selectedFrame) {
+                const frameImage = new Image();
+                frameImage.src = selectedFrame;
+                frameImage.onload = () => {
+                    ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+                };
     }
 }
 
@@ -324,4 +348,5 @@
 </body>
 </html>
 
+<!COPY WA CRIATIVA 6.0> 
 <!COPY WA CRIATIVA 6.0> 
