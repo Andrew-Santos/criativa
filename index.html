@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seleção de Moldura</title>
     <style>
+        /* Seus estilos permanecem os mesmos */
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient( 180deg, #DFB1B7,#d39da6d8 );
+            background: linear-gradient(180deg, #DFB1B7, #9da2d3a4);
             color: #DFB1B7;
             margin: 0;
         }
@@ -18,7 +19,7 @@
             text-align: center;
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             width: 90%;
             max-width: 500px;
             display: flex;
@@ -26,11 +27,11 @@
             align-items: center;
             gap: 20px;
         }
-        h1 {
+        h1, h2 {
             color: #523E93;
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
             font-size: 20px;
-            margin: 0px;
+            margin: 0;
         }
         label {
             background: #EE3D84;
@@ -41,7 +42,7 @@
             display: inline-block;
             margin-bottom: 20px;
             text-align: center;
-            box-shadow: 0 4px #997e87;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             transition: transform 0.2s, box-shadow 0.2s;
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
             font-size: 17px;
@@ -54,9 +55,10 @@
             box-shadow: 0 2px #AA647B;
         }
         .frames {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+            display: grid; /* Alinhando usando grid */
+            grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+            gap: 10px; /* Espaçamento entre molduras */
+            margin-top: 10px; /* Espaçamento superior */
         }
         .frame {
             width: 80px;
@@ -65,18 +67,18 @@
             border-radius: 15px;
             border: 3px solid transparent;
             transition: transform 0.2s;
-            background-color: #9da2d3a4;
+            background-color: #5898c2;
         }
         .frame:hover, .frame.selected {
             border-color: #F4909E;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             transform: scale(1.1);
         }
         canvas {
             width: 100%;
             max-width: 250px;
             border-radius: 15px;
-            background: linear-gradient( 60deg, #c9cad6, #e9eaf7);
+            background: linear-gradient(60deg, #c9cad6, #e9eaf7);
         }
         button {
             width: 210px;
@@ -111,78 +113,50 @@
         #logo {
             max-width: 200px; /* Ajuste o tamanho da logo */
         }
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
+        #splash img { width: 100%; height: auto; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .loader { margin-top: 150px; border: 8px solid rgba(0, 0, 0, 0.1); border-left-color: #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; z-index: 1001; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .content { display: none; }
     </style>
-
-    <style>
-        #splash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        #splash img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .loader {
-            margin-top: 150px;
-            border: 8px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            z-index: 1001;
-        }
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-        .content {
-            display: none;
-        }
-    </style>
-
 </head>
 <body>
+
     <!-- Splash Screen -->
-    <div id="splash">
-        <img src="criativavertical.png" alt="Logo">
-        <div class="loader"></div>
-    </div>
+    <div id="splash"><img src="criativavertical.png" alt="Logo"><div class="loader"></div></div>
+    
     <!-- Logo centralizada com link -->
     <div class="container">
-        <a href="https://bit.ly/criativa202410271933" target="_blank" id="logo-link">
+        <a href="https://seulink.com" target="_blank" id="logo-link">
             <img src="criativaazul.png" alt="Logo" id="logo">
         </a>
+        
         <h1>Escolha sua foto:</h1>
         <label for="photoInput">📸 Upload </label>
-        <h1>Escolha sua moldura:</h1>
         <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" style="display:none;">
+
+        <!-- Primeiro conjunto de molduras -->
+        <h2>Molduras stories</h2>
         <div class="frames">
-            <img src="frame1.png" class="frame" onclick="selectFrame('frame1.png')">
-            <img src="frame2.png" class="frame" onclick="selectFrame('frame2.png')">
-            <img src="frame3.png" class="frame" onclick="selectFrame('frame3.png')">
-            <img src="frame4.png" class="frame" onclick="selectFrame('frame4.png')">
+            <img src="frame1.png" class="frame" onclick="selectFrame('frame1.png', '1920')">
+            <img src="frame2.png" class="frame" onclick="selectFrame('frame2.png', '1920')">
+            <img src="frame3.png" class="frame" onclick="selectFrame('frame3.png', '1920')">
+            <img src="frame4.png" class="frame" onclick="selectFrame('frame4.png', '1920')">
         </div>
+
+        <!-- Segundo conjunto de molduras -->
+        <h2>Molduras feed</h2>
+        <div class="frames">
+            <img src="frame5.png" class="frame" onclick="selectFrame('frame5.png', '1350')">
+            <img src="frame6.png" class="frame" onclick="selectFrame('frame6.png', '1350')">
+            <img src="frame7.png" class="frame" onclick="selectFrame('frame7.png', '1350')">
+            <img src="frame8.png" class="frame" onclick="selectFrame('frame8.png', '1350')">
+        </div>
+
         <canvas id="canvas" width="1080" height="1920"></canvas>
-        <button onclick="sharePhoto()">🚀 Download </button>
+        <button onclick="sharePhoto()">🚀 Compartilhar </button>
     </div>
+
     <script>
         window.addEventListener("load", () => {
             setTimeout(() => {
@@ -190,161 +164,160 @@
                 document.querySelector(".content").style.display = "block";
             }, 2000);
         });
-    </script>
-    <script>
-        if (!/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            document.body.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; color: #33;">
-                    <a href="https://bit.ly/criativa202410271933" target="_blank">
-                        <img src="criativaazul.png" alt="Imagem de Bloqueio" style="max-width: 300px; width: 100%; border-radius: 5px; box-shadow: 10px rgba(0,0,0,0.3);">
-                    </a>
-                    <p style="margin-top: 20px; font-size: 30px; color: #EE3D84;">Este site é acessível apenas por dispositivos móveis.</p>
-                </div>
-            `;
-        }
-    </script>
-    <script>
-        let selectedFrame = '',
-            loadedImage = null,
-            scale = 1,
-            offsetX = 0,
-            offsetY = 0,
-            isDragging = false,
-            lastMouseX,
-            lastMouseY,
-            isTouchDevice = 'ontouchstart' in window;
-        
-        let pinchStartDist = 0, initialScale = 1;
 
-        function selectFrame(frame) {
+        let loadedImage;
+        let selectedFrame = '';
+        let selectedFrameSize = '1920'; // Tamanho padrão inicial
+        let offsetX = 0, offsetY = 0;
+        let scale = 1;
+        let isDragging = false;
+        let lastMouseX, lastMouseY;
+        let lastTouchDistance = 0;
+        let lastTouchX, lastTouchY; // Para rastrear a posição do toque
+
+        function selectFrame(frame, size) {
             selectedFrame = frame;
-            document.querySelectorAll('.frame').forEach(img => img.classList.remove('selected'));
-            event.target.classList.add('selected');
-            drawCanvas();
+            selectedFrameSize = size; // Atualiza o tamanho baseado na moldura selecionada
+            const frames = document.querySelectorAll('.frame');
+            frames.forEach(img => img.classList.remove('selected'));
+            const selectedElement = document.querySelector(`img[src="${frame}"]`);
+            if (selectedElement) selectedElement.classList.add('selected');
+            
+            // Atualiza o tamanho do canvas para 1080x1350 se a moldura for 1350
+            const canvas = document.getElementById('canvas');
+            if (size === '1350') {
+                canvas.width = 1080;
+                canvas.height = 1350;
+            } else {
+                canvas.width = 1080;
+                canvas.height = 1920;
+            }
+
+            drawImage();
         }
 
         function loadPhoto(event) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                loadedImage = new Image();
-                loadedImage.onload = drawCanvas;
-                loadedImage.src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    loadedImage = new Image();
+                    loadedImage.src = e.target.result;
+                    loadedImage.onload = drawImage;
+                }
+                reader.readAsDataURL(file);
+            }
         }
 
-        function drawCanvas() {
-            const canvas = document.getElementById('canvas'),
-                  ctx = canvas.getContext('2d');
+        function drawImage() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             if (loadedImage) {
-                ctx.save();
-                ctx.translate(offsetX, offsetY);
-                ctx.scale(scale, scale);
-                ctx.drawImage(loadedImage, 0, 0);
-                ctx.restore();
-            }
-            if (selectedFrame) {
-                const frame = new Image();
-                frame.src = selectedFrame;
-                frame.onload = () => {
-                    ctx.drawImage(frame, 0, 0);
+                // Centraliza a imagem no canvas
+                const imgWidth = loadedImage.width * scale;
+                const imgHeight = loadedImage.height * scale;
+                const x = (canvas.width / 2) - (imgWidth / 2) + offsetX;
+                const y = (canvas.height / 2) - (imgHeight / 2) + offsetY;
+                ctx.drawImage(loadedImage, x, y, imgWidth, imgHeight);
+
+                // Desenha a moldura selecionada
+                const frameImage = new Image();
+                frameImage.src = selectedFrame;
+                frameImage.onload = () => {
+                    ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
                 };
             }
         }
 
-        canvas.addEventListener(isTouchDevice ? 'touchstart' : 'mousedown', (event) => {
-            if (loadedImage) {
-                isDragging = true;
-                lastMouseX = isTouchDevice ? event.touches[0].clientX : event.clientX;
-                lastMouseY = isTouchDevice ? event.touches[0].clientY : event.clientY;
-            }
+        function sharePhoto() {
+            const canvas = document.getElementById('canvas');
+            canvas.toBlob(function(blob) {
+                const file = new File([blob], "my-photo.png", { type: "image/png" });
+                
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Minha Foto',
+                        text: 'Dê uma olhada nesta foto que criei!',
+                    })
+                    .then(() => console.log('Compartilhado com sucesso!'))
+                    .catch((error) => console.error('Erro ao compartilhar', error));
+                } else {
+                    alert('Compartilhamento não suportado neste dispositivo.');
+                }
+            }, 'image/png');
+        }
+
+
+        // Funções para manipulação do mouse
+        canvas.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
         });
 
-        canvas.addEventListener(isTouchDevice ? 'touchmove' : 'mousemove', (event) => {
-            if (isDragging) {
-                const mouseX = isTouchDevice ? event.touches[0].clientX : event.clientX;
-                const mouseY = isTouchDevice ? event.touches[0].clientY : event.clientY;
-                offsetX += (mouseX - lastMouseX) / scale;
-                offsetY += (mouseY - lastMouseY) / scale;
-                lastMouseX = mouseX;
-                lastMouseY = mouseY;
-                drawCanvas();
-            }
-        });
-
-        canvas.addEventListener(isTouchDevice ? 'touchend' : 'mouseup', () => {
+        canvas.addEventListener('mouseup', function() {
             isDragging = false;
         });
 
-        canvas.addEventListener('wheel', (event) => {
-            if (loadedImage) {
-                event.preventDefault();
-                scale += event.deltaY * -0.01;
-                scale = Math.min(Math.max(.125, scale), 4);
-                drawCanvas();
+        canvas.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                const dx = e.clientX - lastMouseX;
+                const dy = e.clientY - lastMouseY;
+                offsetX += dx;
+                offsetY += dy;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                drawImage();
             }
         });
 
-        canvas.addEventListener('touchstart', (event) => {
-            if (event.touches.length === 2) {
-                pinchStartDist = Math.hypot(
-                    event.touches[0].clientX - event.touches[1].clientX,
-                    event.touches[0].clientY - event.touches[1].clientY
-                );
-                initialScale = scale;
-                event.preventDefault();
+        // Funções para manipulação de toque (pinça do dedo)
+        canvas.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+            } else if (e.touches.length === 1) { // Inicia o arraste
+                isDragging = true;
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
             }
         });
 
-        canvas.addEventListener('touchmove', (event) => {
-            if (event.touches.length === 2) {
-                const currentDist = Math.hypot(
-                    event.touches[0].clientX - event.touches[1].clientX,
-                    event.touches[0].clientY - event.touches[1].clientY
-                );
-                scale = initialScale * (currentDist / pinchStartDist);
-                scale = Math.min(Math.max(.125, scale), 4);
-                drawCanvas();
-                event.preventDefault();
+        canvas.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const newTouchDistance = Math.sqrt(dx * dx + dy * dy);
+                scale *= newTouchDistance / lastTouchDistance; // Atualiza a escala com base na distância
+                lastTouchDistance = newTouchDistance;
+                drawImage();
+            } else if (e.touches.length === 1 && isDragging) { // Movimento com um único toque
+                const touchX = e.touches[0].clientX;
+                const touchY = e.touches[0].clientY;
+                const dx = touchX - lastTouchX;
+                const dy = touchY - lastTouchY;
+                offsetX += dx; // Ajuste na posição horizontal
+                offsetY += dy; // Ajuste na posição vertical
+                lastTouchX = touchX; // Atualiza a posição do toque
+                lastTouchY = touchY; // Atualiza a posição do toque
+                drawImage();
             }
+            e.preventDefault(); // Previne o comportamento padrão de rolagem da página
         });
 
-       /* function sharePhoto() {
-            const canvas = document.getElementById('canvas');
-            canvas.toBlob(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'photo-with-frame.png';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }, 'image/png');
-        }*/
-        async function sharePhoto() {
-    const canvas = document.getElementById('canvas');
-    const dataUrl = canvas.toDataURL('image/png');
-    
-    try {
-        const response = await fetch(dataUrl);
-        const blob = await response.blob();
-        const file = new File([blob], 'imagem-com-moldura.png', { type: 'image/png' });
-        
-        // Usando a API de compartilhamento para enviar a imagem
-        await navigator.share({
-            title: 'Imagem com Moldura',
-            text: 'Confira esta imagem que criei!',
-            files: [file]
+        canvas.addEventListener('touchend', function(e) {
+            if (e.touches.length < 2) {
+                lastTouchDistance = 0; // Reseta a distância ao soltar os dedos
+                isDragging = false; // Para o arraste
+            }
         });
-    } catch (error) {
-        console.error('Erro ao compartilhar:', error);
-    }
-}
 
     </script>
 </body>
 </html>
 
-<!COPY WA CRIATIVA 4.0> 
+
+<!COPY WA CRIATIVA 5.0> 
